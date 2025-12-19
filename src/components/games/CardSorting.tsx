@@ -111,7 +111,7 @@ export default function CardSorting() {
 
                     {/* The Card */}
                     <div
-                        className={`h-40 w-32 rounded-xl border-4 shadow-xl flex items-center justify-center bg-white transition-all duration-300
+                        className={`h-40 w-32 rounded-xl border-4 shadow-xl flex items-center justify-center bg-white dark:bg-card transition-all duration-300
                     ${message === "Correct!" ? "border-green-500 scale-105" : message === "Wrong Rule!" ? "border-red-500 shake" : "border-gray-200"}
                   `}
                     >

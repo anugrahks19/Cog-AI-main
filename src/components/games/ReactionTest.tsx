@@ -55,7 +55,7 @@ export default function ReactionTest() {
         <Card
             className={`h-64 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 select-none min-h-[300px]
         ${status === "waiting" ? "bg-red-500 hover:bg-red-600 border-red-600" :
-                    status === "ready" ? "bg-green-500 border-green-600" : "bg-white/80"}`}
+                    status === "ready" ? "bg-green-500 border-green-600" : "bg-white/80 dark:bg-card/80"}`}
             onClick={(status === "waiting" || status === "ready") ? handleClick : undefined}
         >
             {status === "idle" && (

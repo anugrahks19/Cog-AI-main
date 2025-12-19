@@ -5,7 +5,7 @@ const HowItWorks = () => {
     {
       icon: Users,
       title: "Onboarding and Consent",
-      details:["Consent from the user", "Responses are confidential", "Activities are not medical tests"]
+      details: ["Consent from the user", "Responses are confidential", "Activities are not medical tests"]
     },
     {
       icon: Users,
@@ -33,7 +33,7 @@ const HowItWorks = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-brain">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 animate-fade-in">
-            How <span className="text-gradient">Cog.ai</span> Works
+            How <span className="text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span> Works
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up">
             Four simple steps to better understand your cognitive health and take proactive action.
@@ -57,12 +57,12 @@ const HowItWorks = () => {
                       <step.icon className="h-6 w-6 text-white" />
                     </div>
                   </div>
-                  
+
                   <h3 className="text-3xl font-bold text-foreground mb-4">{step.title}</h3>
                   <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
                     {step.description}
                   </p>
-                  
+
                   <ul className="space-y-2">
                     {step.details.map((detail, detailIndex) => (
                       <li key={detailIndex} className="flex items-center space-x-3">

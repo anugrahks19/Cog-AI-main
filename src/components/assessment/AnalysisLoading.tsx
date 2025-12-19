@@ -54,7 +54,7 @@ export const AnalysisLoading = ({ progress, className }: AnalysisLoadingProps) =
     >
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col gap-8">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 shadow-lg shadow-primary/30">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 dark:bg-white/5 shadow-lg shadow-primary/30">
             <Icon className="h-8 w-8 text-primary-foreground" />
           </div>
           <div>
@@ -69,21 +69,21 @@ export const AnalysisLoading = ({ progress, className }: AnalysisLoadingProps) =
             <span>Confidence synthesis</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <Progress value={progress} className="h-3 overflow-hidden rounded-full bg-white/10">
+          <Progress value={progress} className="h-3 overflow-hidden rounded-full bg-white/10 dark:bg-white/5">
             <span className="sr-only">{Math.round(progress)}% complete</span>
           </Progress>
         </div>
 
         <div className="grid gap-3 text-sm text-slate-200 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 text-center backdrop-blur-md">
+          <div className="rounded-2xl border border-white/5 bg-white/5 dark:bg-white/5 p-4 text-center backdrop-blur-md">
             <p className="text-2xl font-semibold text-white">24</p>
             <p className="text-xs uppercase tracking-widest text-slate-400">Acoustic markers</p>
           </div>
-          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 text-center backdrop-blur-md">
+          <div className="rounded-2xl border border-white/5 bg-white/5 dark:bg-white/5 p-4 text-center backdrop-blur-md">
             <p className="text-2xl font-semibold text-white">18</p>
             <p className="text-xs uppercase tracking-widest text-slate-400">Cognitive checks</p>
           </div>
-          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 text-center backdrop-blur-md">
+          <div className="rounded-2xl border border-white/5 bg-white/5 dark:bg-white/5 p-4 text-center backdrop-blur-md">
             <p className="text-2xl font-semibold text-white">AES-256</p>
             <p className="text-xs uppercase tracking-widest text-slate-400">Local encryption</p>
           </div>

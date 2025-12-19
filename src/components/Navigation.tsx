@@ -1,11 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const isDark =
+      localStorage.theme === "dark" ||
+      (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      setTheme("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      setTheme("light");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.classList.toggle("dark");
+    localStorage.theme = newTheme;
+  };
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -15,6 +37,7 @@ const Navigation = () => {
     { href: "/assessment", label: "Assessment" },
     { href: "/hospital-finder", label: "Hospital Finder" },
     { href: "/clinician", label: "MD Portal" }, // Shortened for nav
+    { href: "/pricing", label: "Pricing" },
     { href: "/brain-gym", label: "Brain Gym" },
     { href: "/resources", label: "Resources" },
     { href: "/contact", label: "Contact" },
@@ -23,7 +46,7 @@ const Navigation = () => {
   const isActive = (href: string) => location.pathname === href;
 
   return (
-    <nav className="fixed top-0 w-full bg-card/95 backdrop-blur-sm border-b border-border z-50">
+    <nav className="fixed top-0 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-border/40 z-50 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -31,7 +54,7 @@ const Navigation = () => {
             <div className="h-10 w-10 flex items-center justify-center rounded-lg overflow-hidden bg-card group-hover:scale-110 transition-transform duration-300">
               <img src="/logo.png" alt="Cog.ai logo" className="h-8 w-8 object-contain" />
             </div>
-            <span className="text-xl font-bold text-gradient">Cog.ai</span>
+            <span className="text-xl font-bold text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -52,13 +75,33 @@ const Navigation = () => {
             ))}
           </div>
 
+          {/* Theme Toggle (Desktop) */}
+          <div className="hidden md:flex items-center ml-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-accent transition-colors text-muted-foreground hover:text-foreground border border-transparent hover:border-border"
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            </button>
+          </div>
+
           {/* Mobile menu button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-accent transition-colors"
-          >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          <div className="flex items-center gap-1 md:hidden">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-accent transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 rounded-lg hover:bg-accent transition-colors"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}

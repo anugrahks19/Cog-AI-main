@@ -29,7 +29,7 @@ export default function BrainGym() {
             <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
 
                 {/* Engagement Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center bg-white/60 backdrop-blur-xl border border-white/40 rounded-2xl p-4 mb-8 shadow-sm animate-fade-in">
+                <div className="flex flex-col md:flex-row justify-between items-center bg-white/60 dark:bg-card/60 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-2xl p-4 mb-8 shadow-sm animate-fade-in">
                     <div className="flex items-center gap-4 mb-4 md:mb-0">
                         <div className="p-3 bg-gradient-to-br from-orange-400 to-red-500 text-white rounded-xl shadow-md">
                             <Flame className="h-6 w-6 animate-pulse" />
@@ -125,7 +125,7 @@ export default function BrainGym() {
 
 function GameCard({ title, desc, icon: Icon, component }: { title: string, desc: string, icon: any, component: React.ReactNode }) {
     return (
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/50 overflow-hidden flex flex-col h-full">
+        <div className="bg-white/80 dark:bg-card/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/50 dark:border-white/10 overflow-hidden flex flex-col h-full">
             <div className="p-4 bg-muted/30 border-b border-white/20 flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-lg text-primary">
                     <Icon className="h-5 w-5" />

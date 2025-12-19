@@ -16,7 +16,7 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const result = await emailjs.send(
         'service_rtnxtal',
@@ -31,17 +31,17 @@ const Contact = () => {
         },
         'EIbt7xEThIzUi9kMU'
       );
-      
+
       toast({
         title: "Email Sent Successfully!",
         description: "Your message has been sent successfully. We'll get back to you soon!",
       });
-      
+
       setFormData({ name: "", email: "", subject: "", message: "" });
-      
+
     } catch (error) {
       console.error('Email sending failed:', error);
-      
+
       toast({
         title: "Failed to Send Email",
         description: "There was an error sending your message. Please try again or contact us directly.",
@@ -152,7 +152,7 @@ const Contact = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/35 via-primary/10 to-secondary/40 opacity-80" />
         <div className="relative max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 animate-fade-in">
-            Contact <span className="text-gradient">Cog.ai</span>
+            Contact <span className="text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up">
             Have questions about cognitive health screening? Our team of experts is here to help.
@@ -183,7 +183,7 @@ const Contact = () => {
             {/* Contact Form */}
             <div>
               <h2 className="text-3xl font-bold text-foreground mb-6">Send Us a Message</h2>
-              
+
               <Card className="shadow-card">
                 <CardContent className="p-6">
                   <form onSubmit={handleSubmit} className="space-y-6">
@@ -270,7 +270,7 @@ const Contact = () => {
             {/* FAQ */}
             <div>
               <h2 className="text-3xl font-bold text-foreground mb-6">Frequently Asked Questions</h2>
-              
+
               <div className="space-y-4">
                 {faqs.map((faq, index) => (
                   <Card key={index} className="shadow-soft">
@@ -353,11 +353,11 @@ const Contact = () => {
       </section>
 
       {/* Emergency Notice */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-yellow-50 border-y border-yellow-200">
+      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-yellow-50 border-y border-yellow-200 dark:bg-yellow-900/10 dark:border-yellow-900/30">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-yellow-800">
-            <strong>Important:</strong> If you're experiencing a medical emergency or having thoughts of self-harm, 
-            please contact emergency services immediately at 911 or your local emergency number. 
+          <p className="text-yellow-800 dark:text-yellow-200">
+            <strong>Important:</strong> If you're experiencing a medical emergency or having thoughts of self-harm,
+            please contact emergency services immediately at 911 or your local emergency number.
             Cog.ai is not intended for emergency medical situations.
           </p>
         </div>

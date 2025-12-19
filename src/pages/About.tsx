@@ -7,7 +7,7 @@ const About = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-brain">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 animate-fade-in">
-            About <span className="text-gradient">Cog.ai</span>
+            About <span className="text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up">
             We're on a mission to help families and doctors detect dementia early through advanced AI technology and accessible testing.

@@ -101,7 +101,7 @@ export default function StroopTest() {
                     <div className="space-y-8 animate-in fade-in zoom-in duration-300">
                         {/* The Stimulus */}
                         <div
-                            className="h-40 flex items-center justify-center rounded-xl bg-white shadow-inner"
+                            className="h-40 flex items-center justify-center rounded-xl bg-white dark:bg-card shadow-inner"
                             style={{ border: `4px solid ${currentColor === "yellow" ? "#facc15" : currentColor}` }} // colored border helper
                         >
                             <h1

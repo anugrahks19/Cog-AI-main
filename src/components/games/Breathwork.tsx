@@ -71,7 +71,7 @@ export default function Breathwork() {
                     <div className="relative h-64 w-64 flex items-center justify-center">
                         <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping-slow"></div>
                         <div className="absolute inset-0 bg-blue-400/20 rounded-full animate-pulse-slow delay-75"></div>
-                        <div className="h-48 w-48 bg-white/80 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center z-20 animate-breathe">
+                        <div className="h-48 w-48 bg-white/80 dark:bg-card/80 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center z-20 animate-breathe">
                             <span className="text-2xl font-bold text-cyan-800 tracking-widest">
                                 BREATHE
                             </span>

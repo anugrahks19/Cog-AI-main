@@ -84,7 +84,7 @@ const Features = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/35 via-primary/10 to-secondary/40 opacity-80" />
         <div className="relative max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-            <span className="text-gradient">Cog.ai</span> Features
+            <span className="text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span> Features
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Comprehensive cognitive health tools designed for families and healthcare providers.

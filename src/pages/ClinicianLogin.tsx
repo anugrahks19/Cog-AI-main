@@ -37,7 +37,7 @@ export default function ClinicianLogin({ onLogin }: Props) {
             <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-700" />
 
-            <Card className="w-full max-w-md relative z-10 shadow-2xl border-white/20 backdrop-blur-xl bg-white/50">
+            <Card className="w-full max-w-md relative z-10 shadow-2xl border-white/20 dark:border-border/50 backdrop-blur-xl bg-white/50 dark:bg-card/50">
                 <CardHeader className="space-y-4 text-center pb-2">
                     <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-2">
                         <Stethoscope className="h-8 w-8 text-primary" />
@@ -57,7 +57,7 @@ export default function ClinicianLogin({ onLogin }: Props) {
                                 <Input
                                     type="email"
                                     placeholder="doctor@cog.ai"
-                                    className="pl-10 h-11 bg-white/60 border-gray-200 focus:bg-white transition-all"
+                                    className="pl-10 h-11 bg-white/60 dark:bg-background/60 border-gray-200 dark:border-border focus:bg-white dark:focus:bg-background transition-all"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -72,7 +72,7 @@ export default function ClinicianLogin({ onLogin }: Props) {
                                 <Input
                                     type="password"
                                     placeholder="••••••••"
-                                    className="pl-10 h-11 bg-white/60 border-gray-200 focus:bg-white transition-all"
+                                    className="pl-10 h-11 bg-white/60 dark:bg-background/60 border-gray-200 dark:border-border focus:bg-white dark:focus:bg-background transition-all"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required

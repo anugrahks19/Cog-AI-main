@@ -13,7 +13,7 @@ const Footer = () => {
               <div className="h-10 w-10 flex items-center justify-center rounded-lg overflow-hidden bg-card">
                 <img src="/logo.png" alt="Cog.ai logo" className="h-8 w-8 object-contain" />
               </div>
-              <span className="text-xl font-bold text-gradient">Cog.ai</span>
+              <span className="text-xl font-bold text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
               AI-powered early dementia detection app. Helping families and doctors detect cognitive issues early through simple tests and easy-to-understand reports.

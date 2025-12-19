@@ -12,33 +12,33 @@ const Index = () => {
         data-particle-mask="off"
       >
         <div className="absolute inset-0 bg-gradient-hero opacity-10"></div>
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: `url(${heroImage})` }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/55 to-background/75 pointer-events-none"></div>
-        
+
         <div className="relative max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl sm:text-6xl font-bold text-foreground mb-6 animate-fade-in">
-              <span className="text-gradient">Cog.ai</span>
+              <span className="text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span>
               <br />
               <span className="text-3xl sm:text-4xl">Early Detection, Better Care</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 animate-slide-up">
               AI-powered early dementia detection app. Helping families and doctors detect cognitive issues early through simple tests and easy-to-understand reports.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
-              <Link 
-                to="/assessment" 
+              <Link
+                to="/assessment"
                 className="btn-hero inline-flex items-center space-x-2"
               >
                 <span>Start Assessment</span>
                 <ArrowRight className="h-5 w-5" />
               </Link>
-              <Link 
-                to="/how-it-works" 
+              <Link
+                to="/how-it-works"
                 className="btn-secondary inline-flex items-center space-x-2"
               >
                 <span>Learn More</span>
@@ -106,7 +106,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
         <div className="relative max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-foreground mb-8">What's Dementia ?</h2>
-          
+
           <div className="relative bg-gradient-brain rounded-2xl p-8 shadow-card">
             <div className="bg-card rounded-xl p-6">
               <h3 className="text-2xl font-semibold text-foreground mb-6">

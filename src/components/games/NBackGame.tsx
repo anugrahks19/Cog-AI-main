@@ -92,7 +92,7 @@ export default function NBackGame() {
     }
 
     return (
-        <Card className="p-6 text-center space-y-6 bg-white/80 backdrop-blur-md border-primary/10 min-h-[400px] flex flex-col justify-center">
+        <Card className="p-6 text-center space-y-6 bg-white/80 dark:bg-card/80 backdrop-blur-md border-primary/10 min-h-[400px] flex flex-col justify-center">
             <div className="flex justify-between items-center text-sm font-medium text-muted-foreground">
                 <span className="flex items-center gap-2"><Brain className="h-4 w-4" /> N-Back Level: {N}</span>
                 <span>Score: {score}</span>
@@ -126,7 +126,7 @@ export default function NBackGame() {
                     <div className={`
              h-48 w-48 mx-auto flex items-center justify-center rounded-2xl shadow-inner border-4 transition-all duration-300
              ${feedback === 'correct' ? 'bg-green-100 border-green-500 scale-105' :
-                            feedback === 'wrong' ? 'bg-red-100 border-red-500 shake' : 'bg-white border-primary/20'}
+                            feedback === 'wrong' ? 'bg-red-100 border-red-500 shake' : 'bg-white dark:bg-card border-primary/20'}
            `}>
                         <h1 className="text-8xl font-black text-primary">
                             {currentLetter}

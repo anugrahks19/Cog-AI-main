@@ -80,7 +80,7 @@ export default function ClinicianDashboard() {
     return (
         <div className="min-h-screen">
             {/* Top Bar */}
-            <div className="bg-white border-b border-border sticky top-16 z-30 px-6 py-4 flex justify-between items-center shadow-sm">
+            <div className="bg-white dark:bg-card border-b border-border sticky top-16 z-30 px-6 py-4 flex justify-between items-center shadow-sm">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                         <LayoutDashboard className="h-6 w-6 text-primary" />
@@ -116,7 +116,7 @@ export default function ClinicianDashboard() {
                                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Search MRN or Name..."
-                                    className="pl-9 bg-white"
+                                    className="pl-9 bg-white dark:bg-card"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -160,16 +160,16 @@ export default function ClinicianDashboard() {
                                     <div>
                                         <h2 className="text-3xl font-bold text-foreground mb-1">{patientDetails.name}</h2>
                                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                            <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border shadow-sm">
+                                            <span className="flex items-center gap-1.5 bg-white dark:bg-card px-2 py-1 rounded-md border shadow-sm">
                                                 <Users className="h-3 w-3" /> {patientDetails.age} Years / Male
                                             </span>
-                                            <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border shadow-sm">
+                                            <span className="flex items-center gap-1.5 bg-white dark:bg-card px-2 py-1 rounded-md border shadow-sm">
                                                 Last Visit: {patientDetails.lastVisit}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Button variant="outline" onClick={handleExportFHIR} className="bg-white hover:bg-muted shadow-sm border-primary/20 hover:border-primary/50 text-primary">
+                                        <Button variant="outline" onClick={handleExportFHIR} className="bg-white dark:bg-card hover:bg-muted shadow-sm border-primary/20 hover:border-primary/50 text-primary">
                                             <FileJson className="mr-2 h-4 w-4" />
                                             Export FHIR JSON
                                         </Button>
@@ -197,7 +197,7 @@ export default function ClinicianDashboard() {
                                     )}
 
                                     {/* The Chart */}
-                                    <div className="bg-white rounded-xl border border-border/50 p-4 shadow-sm">
+                                    <div className="bg-white dark:bg-card rounded-xl border border-border/50 p-4 shadow-sm">
                                         <div className="flex items-center justify-between mb-6">
                                             <h3 className="font-semibold flex items-center gap-2">
                                                 <TrendingUp className="h-5 w-5 text-primary" />
@@ -214,28 +214,28 @@ export default function ClinicianDashboard() {
 
                                     {/* Metrics Grid */}
                                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                        <div className="p-4 bg-white border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
+                                        <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
                                             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Memory</div>
                                             <div className="text-3xl font-bold text-primary">4<span className="text-lg text-muted-foreground/50">/10</span></div>
                                             <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">
                                                 <div className="h-full bg-red-500 w-[40%]"></div>
                                             </div>
                                         </div>
-                                        <div className="p-4 bg-white border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
+                                        <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
                                             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Attention</div>
                                             <div className="text-3xl font-bold text-yellow-600">5<span className="text-lg text-muted-foreground/50">/10</span></div>
                                             <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">
                                                 <div className="h-full bg-yellow-500 w-[50%]"></div>
                                             </div>
                                         </div>
-                                        <div className="p-4 bg-white border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
+                                        <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
                                             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Language</div>
                                             <div className="text-3xl font-bold text-green-600">6<span className="text-lg text-muted-foreground/50">/10</span></div>
                                             <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">
                                                 <div className="h-full bg-green-500 w-[60%]"></div>
                                             </div>
                                         </div>
-                                        <div className="p-4 bg-white border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
+                                        <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
                                             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Executive</div>
                                             <div className="text-3xl font-bold text-blue-600">5<span className="text-lg text-muted-foreground/50">/10</span></div>
                                             <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">

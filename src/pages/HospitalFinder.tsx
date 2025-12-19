@@ -97,7 +97,7 @@ const HospitalFinder = () => {
             <Button
               variant="secondary"
               size="sm"
-              className="h-8 bg-white text-[#5b21b6] font-semibold hover:bg-white/90 border-none"
+              className="h-8 bg-white dark:bg-card text-[#5b21b6] dark:text-primary font-semibold hover:bg-white/90 dark:hover:bg-card/90 border-none"
               onClick={openGeneralSearch}
             >
               Open hospital map
@@ -119,7 +119,7 @@ const HospitalFinder = () => {
             {highlights.map((item) => (
               <Card
                 key={item.title}
-                className="bg-white border border-white shadow-[0_15px_30px_-18px_rgba(79,70,229,0.35)] transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-[0_25px_45px_-20px_rgba(79,70,229,0.45)]"
+                className="bg-white dark:bg-card border border-white dark:border-border shadow-[0_15px_30px_-18px_rgba(79,70,229,0.35)] dark:shadow-none transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-[0_25px_45px_-20px_rgba(79,70,229,0.45)]"
                 style={{ backgroundColor: "#ffffff" }}
               >
                 <CardHeader className="space-y-4">

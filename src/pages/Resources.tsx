@@ -272,7 +272,7 @@ const Resources = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/35 via-primary/10 to-secondary/40 opacity-80" />
         <div className="relative max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 animate-fade-in">
-            Resources & <span className="text-gradient">Insights</span>
+            Resources & <span className="text-gradient dark:bg-none dark:text-blue-500">Insights</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up">
             Expert guidance, research insights, and practical support for families navigating cognitive health.
@@ -287,11 +287,10 @@ const Resources = () => {
             {categories.map((category, index) => (
               <button
                 key={category.name}
-                className={`px-4 py-2 rounded-full transition-all duration-300 ${
-                  index === 0
+                className={`px-4 py-2 rounded-full transition-all duration-300 ${index === 0
                     ? "bg-primary text-primary-foreground shadow-soft"
                     : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                }`}
+                  }`}
               >
                 {category.name} ({category.count})
               </button>
