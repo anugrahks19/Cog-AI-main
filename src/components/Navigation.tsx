@@ -9,9 +9,9 @@ const Navigation = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const isDark =
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    // Determine initial theme - Default to LIGHT if not set
+    const savedTheme = localStorage.getItem("theme");
+    const isDark = savedTheme === "dark"; // Only dark if explicitly saved as dark
 
     if (isDark) {
       document.documentElement.classList.add("dark");
@@ -25,8 +25,12 @@ const Navigation = () => {
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    document.documentElement.classList.toggle("dark");
-    localStorage.theme = newTheme;
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", newTheme);
   };
 
   const navItems = [

@@ -119,11 +119,10 @@ const HospitalFinder = () => {
             {highlights.map((item) => (
               <Card
                 key={item.title}
-                className="bg-white dark:bg-card border border-white dark:border-border shadow-[0_15px_30px_-18px_rgba(79,70,229,0.35)] dark:shadow-none transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-[0_25px_45px_-20px_rgba(79,70,229,0.45)]"
-                style={{ backgroundColor: "#ffffff" }}
+                className="bg-white dark:bg-card border border-white/50 dark:border-border shadow-[0_15px_30px_-18px_rgba(79,70,229,0.35)] dark:shadow-none transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-[0_25px_45px_-20px_rgba(79,70,229,0.45)]"
               >
                 <CardHeader className="space-y-4">
-                  <div className="p-3 w-fit rounded-xl bg-[#ede9fe] text-[#5b21b6]">
+                  <div className="p-3 w-fit rounded-xl bg-[#ede9fe] text-[#5b21b6] dark:bg-primary/20 dark:text-primary">
                     <item.icon className="h-6 w-6" />
                   </div>
                   <CardTitle className="text-xl text-foreground">{item.title}</CardTitle>
