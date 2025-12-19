@@ -24,37 +24,49 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="col-span-1 md:col-span-1">
             <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-2">
               <Link to="/" className="block text-muted-foreground hover:text-primary transition-colors">
                 Home
               </Link>
               <Link to="/about" className="block text-muted-foreground hover:text-primary transition-colors">
                 About
               </Link>
+              <Link to="/how-it-works" className="block text-muted-foreground hover:text-primary transition-colors">
+                How It Works
+              </Link>
               <Link to="/features" className="block text-muted-foreground hover:text-primary transition-colors">
                 Features
-              </Link>
-              <Link to="/hospital-finder" className="block text-muted-foreground hover:text-primary transition-colors">
-                Hospital Finder
               </Link>
               <Link to="/assessment" className="block text-muted-foreground hover:text-primary transition-colors">
                 Assessment
               </Link>
-            </div>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
-            <div className="space-y-2">
+              <Link to="/brain-gym" className="block text-muted-foreground hover:text-primary transition-colors">
+                Brain Gym
+              </Link>
+              <Link to="/hospital-finder" className="block text-muted-foreground hover:text-primary transition-colors">
+                Hospital Finder
+              </Link>
+              <Link to="/clinician" className="block text-muted-foreground hover:text-primary transition-colors">
+                MD Portal
+              </Link>
+              <Link to="/pricing" className="block text-muted-foreground hover:text-primary transition-colors">
+                Pricing
+              </Link>
               <Link to="/resources" className="block text-muted-foreground hover:text-primary transition-colors">
-                Blog
+                Resources
               </Link>
               <Link to="/contact" className="block text-muted-foreground hover:text-primary transition-colors">
                 Contact
               </Link>
+            </div>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="font-semibold text-foreground mb-4">Legal</h3>
+            <div className="space-y-2">
               <a
                 href="https://www.freeprivacypolicy.com/live/2f8ae647-8c7a-4bbb-8311-bd01f9664f05"
                 target="_blank"

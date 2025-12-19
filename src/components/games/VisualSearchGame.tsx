@@ -91,12 +91,12 @@ export default function VisualSearchGame() {
                     <Button onClick={startGame} size="lg" className="w-full">Start Scanning</Button>
                 </div>
             ) : (
-                <div className="grid grid-cols-5 gap-2 max-w-sm mx-auto">
+                <div className="grid grid-cols-5 gap-1 sm:gap-2 max-w-sm mx-auto">
                     {items.map((item, i) => (
                         <button
                             key={i}
                             onClick={() => handleItemClick(i)}
-                            className="text-4xl hover:scale-110 hover:bg-muted rounded-lg p-2 transition-transform h-16 w-16 flex items-center justify-center cursor-pointer select-none"
+                            className="text-2xl sm:text-4xl hover:scale-110 hover:bg-muted rounded-lg p-1 sm:p-2 transition-transform h-12 w-12 sm:h-16 sm:w-16 flex items-center justify-center cursor-pointer select-none"
                         >
                             {item}
                         </button>
