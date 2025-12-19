@@ -100,6 +100,11 @@ export default function ClinicianLogin({ onLogin }: Props) {
                         </Button>
 
                         <div className="text-center">
+                            <div className="bg-muted/50 p-3 rounded-lg border border-border/50 text-sm py-4 mb-4">
+                                <p className="font-medium text-foreground">Demo Credentials:</p>
+                                <p className="text-muted-foreground">Username: <span className="font-mono text-primary">doctor@cog.ai</span></p>
+                                <p className="text-muted-foreground">Password: <span className="font-mono text-primary">demo</span></p>
+                            </div>
                             <p className="text-xs text-muted-foreground mt-4">
                                 Strictly confidential. Patient data handling is subject to DPDPA 2023 compliance.
                             </p>
