@@ -11,7 +11,22 @@ router = APIRouter()
 
 @router.post("", response_model=UserResponse)
 def register_user(payload: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
-    user = User(name=payload.name, age=payload.age, language=payload.language, consent=payload.consent)
+    user = User(
+        name=payload.name,
+        age=payload.age,
+        gender=payload.gender,
+        education=payload.education,
+        family_history=payload.family_history,
+        diabetes=payload.diabetes,
+        hypertension=payload.hypertension,
+        depression=payload.depression,
+        head_injury=payload.head_injury,
+        sleep_quality=payload.sleep_quality,
+        physical_activity=payload.physical_activity,
+        smoking=payload.smoking,
+        language=payload.language,
+        consent=payload.consent,
+    )
     db.add(user)
     db.commit()
     db.refresh(user)

@@ -33,6 +33,19 @@ const onboardingSchema = z
       .int("Age must be a whole number")
       .min(18, "Must be 18 or older")
       .max(120, "Please enter a valid age"),
+    gender: z.coerce.number().int().min(0).max(1),
+    education: z.coerce.number().int().min(0).max(3),
+    // Medical History (0=No, 1=Yes)
+    family_history: z.coerce.number().int().min(0).max(1).default(0),
+    diabetes: z.coerce.number().int().min(0).max(1).default(0),
+    hypertension: z.coerce.number().int().min(0).max(1).default(0),
+    depression: z.coerce.number().int().min(0).max(1).default(0),
+    head_injury: z.coerce.number().int().min(0).max(1).default(0),
+    // Lifestyle
+    sleep_quality: z.coerce.number().min(4).max(10).default(7), // 4-10 scale
+    physical_activity: z.coerce.number().min(0).max(10).default(5), // 0-10 scale
+    smoking: z.coerce.number().int().min(0).max(1).default(0), // 0=No, 1=Yes
+
     language: z.string({ required_error: "Select a language" }),
     consent: z
       .literal(true, {
@@ -75,6 +88,16 @@ export const OnboardingForm = ({
     () => ({
       name: user?.name ?? "",
       age: user?.age ?? ("" as unknown as number),
+      gender: user?.gender ?? 0,
+      education: user?.education ?? 1,
+      family_history: user?.family_history ?? 0,
+      diabetes: user?.diabetes ?? 0,
+      hypertension: user?.hypertension ?? 0,
+      depression: user?.depression ?? 0,
+      head_injury: user?.head_injury ?? 0,
+      sleep_quality: user?.sleep_quality ?? 7,
+      physical_activity: user?.physical_activity ?? 5,
+      smoking: user?.smoking ?? 0,
       language: user?.language ?? "en",
       consent: user?.consent ?? false,
     }),
@@ -134,6 +157,154 @@ export const OnboardingForm = ({
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gender</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(Number(val))}
+                  defaultValue={String(field.value)}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="0">Male</SelectItem>
+                    <SelectItem value="1">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="education"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Education Level</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(Number(val))}
+                  defaultValue={String(field.value)}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Education" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="0">None</SelectItem>
+                    <SelectItem value="1">High School</SelectItem>
+                    <SelectItem value="2">Bachelor's</SelectItem>
+                    <SelectItem value="3">Higher Degree</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="space-y-4 rounded-lg border p-4">
+          <h3 className="text-lg font-medium">Health & Lifestyle</h3>
+          <div className="grid gap-6 md:grid-cols-2">
+
+            {/* Medical History Checklist-style Selects */}
+            <FormField
+              control={form.control}
+              name="family_history"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Family History of Alzheimer's?</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="diabetes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Do you have Diabetes?</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="hypertension"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>High Blood Pressure?</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="smoking"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Do you Smoke?</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sleep_quality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sleep Quality (1-10)</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      {[...Array(11).keys()].slice(4).map(i => <SelectItem key={i} value={String(i)}>{i}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="physical_activity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Activity Level (0-10)</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      {[...Array(11).keys()].map(i => <SelectItem key={i} value={String(i)}>{i}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         <FormField

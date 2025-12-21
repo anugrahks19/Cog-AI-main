@@ -99,7 +99,15 @@ def run_prediction_pipeline(db: Session, assessment: Assessment) -> PredictionRe
 
     try:
         samples = db.query(SpeechSample).filter_by(assessment_id=assessment.id).all()
-        output = pipeline_manager.process_assessment(assessment, samples)
+        
+        # Fetch previous assessment for longitudinal comparison
+        previous = db.query(Assessment).filter(
+            Assessment.user_id == assessment.user_id,
+            Assessment.id != assessment.id,
+            Assessment.created_at < assessment.created_at
+        ).order_by(Assessment.created_at.desc()).first()
+        
+        output = pipeline_manager.process_assessment(assessment, samples, previous_assessment=previous)
         pred = output["prediction"]
 
         record = PredictionResult(

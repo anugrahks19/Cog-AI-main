@@ -494,6 +494,16 @@ const Assessment = () => {
       const payload = {
         name: values.name,
         age: values.age,
+        gender: values.gender,
+        education: values.education,
+        family_history: values.family_history,
+        diabetes: values.diabetes,
+        hypertension: values.hypertension,
+        depression: values.depression,
+        head_injury: values.head_injury,
+        sleep_quality: values.sleep_quality,
+        physical_activity: values.physical_activity,
+        smoking: values.smoking,
         language: values.language,
         consent: values.consent,
       };
@@ -502,6 +512,18 @@ const Assessment = () => {
         id: response.user.id,
         name: response.user.name,
         age: response.user.age,
+        gender: response.user.gender,
+        education: response.user.education,
+        // Map response fields back to session
+        family_history: response.user.family_history,
+        diabetes: response.user.diabetes,
+        hypertension: response.user.hypertension,
+        depression: response.user.depression,
+        head_injury: response.user.head_injury,
+        sleep_quality: response.user.sleep_quality,
+        physical_activity: response.user.physical_activity,
+        smoking: response.user.smoking,
+
         language: response.user.language,
         consent: response.user.consent,
         accessToken: response.accessToken,
@@ -894,10 +916,10 @@ const Assessment = () => {
                   <div
                     key={step.id}
                     className={`rounded-xl border p-4 text-center transition ${isActive
-                        ? "border-primary bg-primary/10 text-primary"
-                        : isCompleted
-                          ? "border-green-500/60 bg-green-500/10 text-green-600"
-                          : "border-border bg-muted/30 text-muted-foreground"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : isCompleted
+                        ? "border-green-500/60 bg-green-500/10 text-green-600"
+                        : "border-border bg-muted/30 text-muted-foreground"
                       }`}
                   >
                     <Icon className="mx-auto mb-2 h-8 w-8" />

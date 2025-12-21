@@ -12,6 +12,16 @@ export interface UserProfile {
   id: string;
   name: string;
   age: number;
+  gender?: number;
+  education?: number;
+  family_history?: number;
+  diabetes?: number;
+  hypertension?: number;
+  depression?: number;
+  head_injury?: number;
+  sleep_quality?: number;
+  physical_activity?: number;
+  smoking?: number;
   language: string;
   consent: boolean;
   accessToken?: string;

@@ -19,6 +19,19 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     name: Mapped[str] = mapped_column(String(120))
     age: Mapped[int] = mapped_column(Integer)
+    gender: Mapped[int] = mapped_column(Integer, default=0) # 0:Male, 1:Female
+    education: Mapped[int] = mapped_column(Integer, default=0) # 0:None..3:Higher
+    # Medical
+    family_history: Mapped[int] = mapped_column(Integer, default=0)
+    diabetes: Mapped[int] = mapped_column(Integer, default=0)
+    hypertension: Mapped[int] = mapped_column(Integer, default=0)
+    depression: Mapped[int] = mapped_column(Integer, default=0)
+    head_injury: Mapped[int] = mapped_column(Integer, default=0)
+    # Lifestyle
+    sleep_quality: Mapped[int] = mapped_column(Integer, default=7)
+    physical_activity: Mapped[int] = mapped_column(Integer, default=5)
+    smoking: Mapped[int] = mapped_column(Integer, default=0)
+    
     language: Mapped[str] = mapped_column(String(16))
     consent: Mapped[bool] = mapped_column(Boolean, default=False)
 

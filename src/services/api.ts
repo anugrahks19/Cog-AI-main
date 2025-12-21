@@ -3,6 +3,19 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000
 export interface RegisterUserPayload {
   name: string;
   age: number;
+  gender: number;
+  education: number;
+  // Medical
+  family_history?: number;
+  diabetes?: number;
+  hypertension?: number;
+  depression?: number;
+  head_injury?: number;
+  // Lifestyle
+  sleep_quality?: number;
+  physical_activity?: number;
+  smoking?: number;
+
   language: string;
   consent: boolean;
 }
@@ -12,6 +25,17 @@ export interface RegisterUserResponse {
     id: string;
     name: string;
     age: number;
+    gender: number;
+    education: number;
+    family_history?: number;
+    diabetes?: number;
+    hypertension?: number;
+    depression?: number;
+    head_injury?: number;
+    sleep_quality?: number;
+    physical_activity?: number;
+    smoking?: number;
+
     language: string;
     consent: boolean;
   };

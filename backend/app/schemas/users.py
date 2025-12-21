@@ -8,6 +8,18 @@ from app.models import User
 class UserCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=120)
     age: int = Field(..., ge=18, le=120)
+    gender: int = Field(..., ge=0, le=1)
+    education: int = Field(..., ge=0, le=3)
+    # New Health Fields
+    family_history: int = Field(0, ge=0, le=1)
+    diabetes: int = Field(0, ge=0, le=1)
+    hypertension: int = Field(0, ge=0, le=1)
+    depression: int = Field(0, ge=0, le=1)
+    head_injury: int = Field(0, ge=0, le=1)
+    sleep_quality: int = Field(7, ge=0, le=10)
+    physical_activity: int = Field(5, ge=0, le=10)
+    smoking: int = Field(0, ge=0, le=1)
+    
     language: str = Field(..., min_length=2, max_length=16)
     consent: bool
 
@@ -16,6 +28,18 @@ class UserOut(BaseModel):
     id: str
     name: str
     age: int
+    gender: int
+    education: int
+    
+    family_history: int = 0
+    diabetes: int = 0
+    hypertension: int = 0
+    depression: int = 0
+    head_injury: int = 0
+    sleep_quality: int = 7
+    physical_activity: int = 5
+    smoking: int = 0
+
     language: str
     consent: bool
     created_at: datetime
