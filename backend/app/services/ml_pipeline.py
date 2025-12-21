@@ -12,7 +12,7 @@ import joblib
 
 from app.models import Assessment, SpeechSample
 
-# Trigger Reload 5
+# Trigger Reload 6
 
 
 class AudioFeatureExtractor:
@@ -175,7 +175,11 @@ class RiskPredictor:
                 tab.get("Depression", 0),
                 # New Compound Features
                 cardio_score,
-                lifestyle_deficit
+                lifestyle_deficit,
+                # Phase 3 Features
+                tab.get("BMI", 25.0),
+                tab.get("AlcoholConsumption", 0.0),
+                tab.get("DietQuality", 5.0)
             ]).reshape(1, -1)
 
             # DEBUG: Prove it to the user
@@ -294,6 +298,20 @@ class PipelineManager:
             sleep = assessment.user.sleep_quality or 7
             phys_act = assessment.user.physical_activity or 5
             smoking = assessment.user.smoking or 0
+            
+            # Phase 3: New Fields
+            alcohol = assessment.user.alcohol_consumption or 0.0
+            diet = assessment.user.diet_quality or 5.0
+            h_cm = assessment.user.height or 0.0
+            w_kg = assessment.user.weight or 0.0
+            
+            # Calculate BMI
+            bmi = 25.0 # Default
+            if h_cm > 0 and w_kg > 0:
+                h_m = h_cm / 100.0
+                bmi = w_kg / (h_m * h_m)
+                # Clamp logical range
+                bmi = max(10.0, min(50.0, bmi))
 
         # 2. MMSE (0-30)
         # Derived from Memory + Language scores (0.0 - 1.0)
@@ -329,6 +347,9 @@ class PipelineManager:
             "SleepQuality": sleep,
             "PhysicalActivity": phys_act,
             "Smoking": smoking,
+            "AlcoholConsumption": alcohol,
+            "DietQuality": diet,
+            "BMI": bmi,
             # Computed
             "MMSE": mmse_val,
             "FunctionalAssessment": func_val,

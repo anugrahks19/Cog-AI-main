@@ -11,8 +11,15 @@ const Navigation = () => {
   useEffect(() => {
     // Determine initial theme - Default to LIGHT if not set
     const savedTheme = localStorage.getItem("theme");
-    const isDark = savedTheme === "dark"; // Only dark if explicitly saved as dark
 
+    // Explicitly enforce light mode if no preference is saved
+    if (!savedTheme) {
+      document.documentElement.classList.remove("dark");
+      setTheme("light");
+      return;
+    }
+
+    const isDark = savedTheme === "dark";
     if (isDark) {
       document.documentElement.classList.add("dark");
       setTheme("dark");

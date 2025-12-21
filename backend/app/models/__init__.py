@@ -31,6 +31,10 @@ class User(Base):
     sleep_quality: Mapped[int] = mapped_column(Integer, default=7)
     physical_activity: Mapped[int] = mapped_column(Integer, default=5)
     smoking: Mapped[int] = mapped_column(Integer, default=0)
+    alcohol_consumption: Mapped[float] = mapped_column(Float, default=0.0)
+    diet_quality: Mapped[float] = mapped_column(Float, default=5.0)
+    height: Mapped[Optional[float]] = mapped_column(Float, nullable=True) # cm
+    weight: Mapped[Optional[float]] = mapped_column(Float, nullable=True) # kg
     
     language: Mapped[str] = mapped_column(String(16))
     consent: Mapped[bool] = mapped_column(Boolean, default=False)

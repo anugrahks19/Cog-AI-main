@@ -46,7 +46,8 @@ def train():
         'Age', 'Gender', 'EducationLevel', 
         'MMSE', 'FunctionalAssessment', 'MemoryComplaints', 'ADL',
         'FamilyHistoryAlzheimers', 'HeadInjury', 'Depression',
-        'CardiovascularScore', 'LifestyleDeficit' # Replaced individual raw columns with compound scores
+        'CardiovascularScore', 'LifestyleDeficit',
+        'BMI', 'AlcoholConsumption', 'DietQuality'
     ]
     target = 'Diagnosis'
     

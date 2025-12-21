@@ -504,6 +504,11 @@ const Assessment = () => {
         sleep_quality: values.sleep_quality,
         physical_activity: values.physical_activity,
         smoking: values.smoking,
+        alcohol_consumption: values.alcohol_consumption,
+        diet_quality: values.diet_quality,
+        height: values.height,
+        weight: values.weight,
+
         language: values.language,
         consent: values.consent,
       };
@@ -523,6 +528,10 @@ const Assessment = () => {
         sleep_quality: response.user.sleep_quality,
         physical_activity: response.user.physical_activity,
         smoking: response.user.smoking,
+        alcohol_consumption: response.user.alcohol_consumption,
+        diet_quality: response.user.diet_quality,
+        height: response.user.height,
+        weight: response.user.weight,
 
         language: response.user.language,
         consent: response.user.consent,

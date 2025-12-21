@@ -19,6 +19,10 @@ class UserCreate(BaseModel):
     sleep_quality: int = Field(7, ge=0, le=10)
     physical_activity: int = Field(5, ge=0, le=10)
     smoking: int = Field(0, ge=0, le=1)
+    alcohol_consumption: float = Field(0.0, ge=0, le=50) # Drinks/week
+    diet_quality: float = Field(5.0, ge=0, le=10)
+    height: float = Field(None, gt=0) # cm
+    weight: float = Field(None, gt=0) # kg
     
     language: str = Field(..., min_length=2, max_length=16)
     consent: bool
@@ -39,6 +43,10 @@ class UserOut(BaseModel):
     sleep_quality: int = 7
     physical_activity: int = 5
     smoking: int = 0
+    alcohol_consumption: float = 0.0
+    diet_quality: float = 5.0
+    height: float | None = None
+    weight: float | None = None
 
     language: str
     consent: bool

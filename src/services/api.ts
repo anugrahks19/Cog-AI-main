@@ -15,6 +15,10 @@ export interface RegisterUserPayload {
   sleep_quality?: number;
   physical_activity?: number;
   smoking?: number;
+  alcohol_consumption?: number;
+  diet_quality?: number;
+  height?: number; // cm
+  weight?: number; // kg
 
   language: string;
   consent: boolean;
@@ -35,6 +39,10 @@ export interface RegisterUserResponse {
     sleep_quality?: number;
     physical_activity?: number;
     smoking?: number;
+    alcohol_consumption?: number;
+    diet_quality?: number;
+    height?: number;
+    weight?: number;
 
     language: string;
     consent: boolean;

@@ -22,6 +22,10 @@ export interface UserProfile {
   sleep_quality?: number;
   physical_activity?: number;
   smoking?: number;
+  alcohol_consumption?: number;
+  diet_quality?: number;
+  height?: number;
+  weight?: number;
   language: string;
   consent: boolean;
   accessToken?: string;

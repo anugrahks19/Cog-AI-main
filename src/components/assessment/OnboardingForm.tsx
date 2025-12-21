@@ -45,6 +45,10 @@ const onboardingSchema = z
     sleep_quality: z.coerce.number().min(4).max(10).default(7), // 4-10 scale
     physical_activity: z.coerce.number().min(0).max(10).default(5), // 0-10 scale
     smoking: z.coerce.number().int().min(0).max(1).default(0), // 0=No, 1=Yes
+    alcohol_consumption: z.coerce.number().min(0).max(50).default(0),
+    diet_quality: z.coerce.number().min(0).max(10).default(5),
+    height: z.coerce.number().min(50).max(300).optional(), // cm
+    weight: z.coerce.number().min(20).max(500).optional(), // kg
 
     language: z.string({ required_error: "Select a language" }),
     consent: z
@@ -98,6 +102,10 @@ export const OnboardingForm = ({
       sleep_quality: user?.sleep_quality ?? 7,
       physical_activity: user?.physical_activity ?? 5,
       smoking: user?.smoking ?? 0,
+      alcohol_consumption: user?.alcohol_consumption ?? 0,
+      diet_quality: user?.diet_quality ?? 5,
+      height: user?.height ?? ("" as unknown as number),
+      weight: user?.weight ?? ("" as unknown as number),
       language: user?.language ?? "en",
       consent: user?.consent ?? false,
     }),
@@ -215,6 +223,32 @@ export const OnboardingForm = ({
           <h3 className="text-lg font-medium">Health & Lifestyle</h3>
           <div className="grid gap-6 md:grid-cols-2">
 
+            {/* Body Metrics */}
+            <FormField
+              control={form.control}
+              name="height"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Height (cm)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="e.g. 175" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Weight (kg)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="e.g. 70" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
             {/* Medical History Checklist-style Selects */}
             <FormField
               control={form.control}
@@ -274,6 +308,19 @@ export const OnboardingForm = ({
 
             <FormField
               control={form.control}
+              name="alcohol_consumption"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Alcohol (Drinks/Week)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="sleep_quality"
               render={({ field }) => (
                 <FormItem>
@@ -294,6 +341,22 @@ export const OnboardingForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Activity Level (0-10)</FormLabel>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      {[...Array(11).keys()].map(i => <SelectItem key={i} value={String(i)}>{i}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="diet_quality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Diet Quality (0-10)</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
