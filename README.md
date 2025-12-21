@@ -1,73 +1,106 @@
-# Welcome to your Lovable project
+# Cog.ai - AI-Powered Dementia Screening Platform
 
-## Project info
+**Empowering early detection through AI-driven cognitive assessment.**
 
-**URL**: https://lovable.dev/projects/c59cfac2-09d3-4bbb-a120-f163d2d17c32
+Cog.ai is a non-invasive, multi-modal screening tool that uses voice biomarkers, cognitive games, and health context to predict the risk of Alzheimer's and other forms of dementia with high accuracy (+90%).
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Quick Start Guide
 
-**Use Lovable**
+### 1. Prerequisites
+Ensure you have the following installed:
+*   **Node.js** (v18 or higher)
+*   **Python** (v3.9 or higher)
+*   **Git**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c59cfac2-09d3-4bbb-a120-f163d2d17c32) and start prompting.
+### 2. Backend Setup (The Brain)
+The backend handles the AI models, database, and API logic.
 
-Changes made via Lovable will be committed automatically to this repo.
+1.  **Navigate to the backend folder**:
+    ```bash
+    cd backend
+    ```
 
-**Use your preferred IDE**
+2.  **Create a virtual environment**:
+    ```bash
+    python -m venv .venv
+    # Windows:
+    .venv\Scripts\activate
+    # Mac/Linux:
+    source .venv/bin/activate
+    ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3.  **Install dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+4.  **Train/Load the AI Model**:
+    *   Ensure `alzheimers_disease_data.csv` is in the project root.
+    *   Run the training script (this generates `app/model.pkl`):
+    ```bash
+    python train_model.py
+    ```
 
-Follow these steps:
+5.  **Run the Server**:
+    ```bash
+    uvicorn app.main:app --reload
+    ```
+    *   The API will start at `http://localhost:8000`.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 3. Frontend Setup (The Interface)
+The frontend is a modern React + Vite application.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1.  **Open a new terminal** and navigate to the project root:
+    ```bash
+    cd d:\Cog-AI-main\Cog-AI-main
+    ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+3.  **Configure Environment**:
+    *   Create a `.env` file in the root if one doesn't exist.
+    *   Add your Firebase configuration keys (see `.env.example`).
 
-**Edit a file directly in GitHub**
+4.  **Start the App**:
+    ```bash
+    npm run dev
+    ```
+    *   The app will open at `http://localhost:5173`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🧠 Features
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 1. Multi-Modal Assessment
+*   **Cognitive Games**: Stroop Test, N-Back, Memory Sequence.
+*   **Voice Analysis**: Analyzes speech patterns for micro-tremors and pauses.
+*   **Health Context**: Integtrates BMI, Lifestyle, and Medical History.
 
-## What technologies are used for this project?
+### 2. AI Prediction Engine
+*   **Model**: XGBoost Classifier (Tuned).
+*   **Accuracy**: ~90% on validation set.
+*   **Calibration**: Uses 15+ distinct health and cognitive markers.
 
-This project is built with:
+### 3. User Dashboard
+*   **Risk Report**: Clear "Low/Medium/High" risk classification.
+*   **Explainable AI**: See exactly *why* a result was given (e.g., "High Sleep Deficit").
+*   **Longitudinal Tracking**: Monitors decline over time.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 🛠️ Tech Stack
+*   **Frontend**: React, Vite, TailwindCSS, ShadcnUI.
+*   **Backend**: Python, FastAPI, SQLAlchemy.
+*   **AI/ML**: XGBoost, Scikit-Learn, Pandas, Numpy.
+*   **Database**: SQLite (Local Dev) / PostgreSQL (Prod).
+*   **Auth**: Firebase Authentication.
 
-Simply open [Lovable](https://lovable.dev/projects/c59cfac2-09d3-4bbb-a120-f163d2d17c32) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📜 License
+This project is for educational and research purposes.
