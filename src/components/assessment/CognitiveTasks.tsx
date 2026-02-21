@@ -29,6 +29,7 @@ interface CognitiveTasksProps {
   tasks: CognitiveTask[];
   onComplete: (payload: CognitiveCompletionPayload) => Promise<void>;
   isSubmitting?: boolean;
+  language: string;
 }
 
 interface TaskState {
@@ -49,11 +50,14 @@ const createTaskState = (): TaskState => ({
   errors: 0,
 });
 
-export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTasksProps) => {
+import { getLocalizedStrings } from "@/lib/i18n";
+
+export const CognitiveTasks = ({ tasks, onComplete, isSubmitting, language }: CognitiveTasksProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [taskStates, setTaskStates] = useState<Record<string, TaskState>>({});
   const [isFinished, setIsFinished] = useState(false);
   const currentTask = useMemo(() => tasks[currentIndex], [tasks, currentIndex]);
+  const i18n = getLocalizedStrings(language);
 
   const startTaskTimer = (taskId: string) => {
     setTaskStates((prev) => {
@@ -268,7 +272,7 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
             <span className="text-sm text-muted-foreground">{currentTask.description}</span>
           </div>
           <Badge variant="secondary">
-            Task {currentIndex + 1} / {tasks.length}
+            {i18n["ui-task"]} {currentIndex + 1} / {tasks.length}
           </Badge>
         </div>
         <Progress value={progress} className="mt-4" />
@@ -278,7 +282,7 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
         {showPrompt && (
           <div className="rounded-lg border p-4 bg-muted/30">
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">Prompt:</span> {currentTask.prompt}
+              <span className="font-semibold text-foreground">{i18n["ui-prompt"]}:</span> {currentTask.prompt}
             </p>
           </div>
         )}
@@ -286,11 +290,11 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
         {/* Free-response for clock drawing */}
         {currentTask.type === "clock-drawing" && (
           <div className="grid gap-2">
-            <label className="text-sm text-muted-foreground">Describe your imagined clock (required)</label>
+            <label className="text-sm text-muted-foreground">{i18n["ui-clock-label"]}</label>
             <textarea
               className="w-full rounded-md border bg-background p-3 text-sm"
               rows={4}
-              placeholder="Numbers 1-12 placed evenly, hour hand near 11, minute hand at 2..."
+              placeholder={i18n["ui-describe-clock-placeholder"]}
               value={taskStates[currentTask.id]?.freeResponse ?? ""}
               onChange={(e) => {
                 const value = e.target.value;
@@ -352,8 +356,8 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
                 const description = state?.freeResponse?.trim();
                 if (!description) {
                   toast({
-                    title: "Describe your drawing",
-                    description: "Add a brief description of your imagined clock before continuing.",
+                    title: i18n["ui-describe-clock-title"],
+                    description: i18n["ui-describe-clock-desc"],
                   });
                   return;
                 }
@@ -366,8 +370,19 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
               completeTask(currentTask.id);
             }}
           >
-            Complete
+            {i18n["ui-complete"]}
           </Button>
+
+          {import.meta.env.DEV && (
+            <Button
+              type="button"
+              variant="secondary"
+              className="opacity-70"
+              onClick={() => completeTask(currentTask.id, { correct: true })}
+            >
+              {i18n["ui-skip-dev"]}
+            </Button>
+          )}
         </div>
 
         {/* Selected sequence visualizer */}
@@ -392,7 +407,7 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
                   })
                 }
               >
-                Undo
+                {i18n["ui-undo"]}
               </Button>
             )}
           </div>
@@ -430,7 +445,7 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
 
         {isFinished && (
           <Button size="lg" className="w-full" onClick={handleFinish} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Cognitive Data"}
+            {isSubmitting ? i18n["ui-submitting"] : i18n["ui-submit"]}
           </Button>
         )}
       </CardContent>

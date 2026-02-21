@@ -50,8 +50,6 @@ const onboardingSchema = z
     diet_quality: z.coerce.number().min(0).max(10).default(5),
     height: z.coerce.number().min(50).max(300).optional(), // cm
     weight: z.coerce.number().min(20).max(500).optional(), // kg
-
-    language: z.string({ required_error: "Select a language" }),
     consent: z
       .literal(true, {
         errorMap: () => ({ message: "Consent is required to proceed" }),
@@ -67,8 +65,10 @@ export type OnboardingFormValues = z.infer<typeof onboardingSchema>;
 
 interface OnboardingFormProps {
   user?: UserProfile | null;
-  onSubmit: (values: OnboardingFormValues) => Promise<void>;
-  isSubmitting?: boolean;
+  onSubmit: (values: any) => Promise<void>;
+  isLoading?: boolean;
+  uiLanguage: string;
+  i18n: Record<string, string>;
 }
 
 const DEFAULT_LANGUAGES: Array<{ value: string; label: string }> = [
@@ -87,7 +87,9 @@ const DEFAULT_LANGUAGES: Array<{ value: string; label: string }> = [
 export const OnboardingForm = ({
   user,
   onSubmit,
-  isSubmitting,
+  isLoading,
+  uiLanguage,
+  i18n,
 }: OnboardingFormProps) => {
   const navigate = useNavigate();
 
@@ -109,7 +111,6 @@ export const OnboardingForm = ({
       diet_quality: user?.diet_quality ?? 5,
       height: user?.height ?? ("" as unknown as number),
       weight: user?.weight ?? ("" as unknown as number),
-      language: user?.language ?? "en",
       consent: user?.consent ?? false,
     }),
     [user],
@@ -120,8 +121,8 @@ export const OnboardingForm = ({
     defaultValues,
   });
 
-  const handleSubmit = async (values: OnboardingFormValues) => {
-    await onSubmit(values);
+  const handleSubmit = async (values: any) => {
+    await onSubmit({ ...values, language: uiLanguage });
   };
 
   return (
@@ -137,9 +138,9 @@ export const OnboardingForm = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <FormLabel>{i18n["ob-name-label"] || "Full Name"}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your full name" {...field} />
+                  <Input placeholder={i18n["ob-name-placeholder"] || "Enter your full name"} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -151,13 +152,13 @@ export const OnboardingForm = ({
             name="age"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Age</FormLabel>
+                <FormLabel>{i18n["ob-age-label"] || "Age"}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     min={18}
                     max={120}
-                    placeholder="Your age"
+                    placeholder={i18n["ob-age-placeholder"] || "Your age"}
                     {...field}
                     onChange={(event) =>
                       field.onChange(Number(event.target.value))
@@ -174,19 +175,19 @@ export const OnboardingForm = ({
             name="gender"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Gender</FormLabel>
+                <FormLabel>{i18n["ob-gender-label"] || "Gender"}</FormLabel>
                 <Select
                   onValueChange={(val) => field.onChange(Number(val))}
                   defaultValue={String(field.value)}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Gender" />
+                      <SelectValue placeholder={i18n["ui-select-placeholder"] || "Select Option"} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="0">Male</SelectItem>
-                    <SelectItem value="1">Female</SelectItem>
+                    <SelectItem value="0">{i18n["ob-gender-male"] || "Male"}</SelectItem>
+                    <SelectItem value="1">{i18n["ob-gender-female"] || "Female"}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -199,21 +200,21 @@ export const OnboardingForm = ({
             name="education"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Education Level</FormLabel>
+                <FormLabel>{i18n["ob-education-label"] || "Education Level"}</FormLabel>
                 <Select
                   onValueChange={(val) => field.onChange(Number(val))}
                   defaultValue={String(field.value)}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Education" />
+                      <SelectValue placeholder={i18n["ui-select-placeholder"] || "Select Option"} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="0">None</SelectItem>
-                    <SelectItem value="1">High School</SelectItem>
-                    <SelectItem value="2">Bachelor's</SelectItem>
-                    <SelectItem value="3">Higher Degree</SelectItem>
+                    <SelectItem value="0">{i18n["ob-education-none"] || "None"}</SelectItem>
+                    <SelectItem value="1">{i18n["ob-education-primary"] || "Primary School"}</SelectItem>
+                    <SelectItem value="2">{i18n["ob-education-secondary"] || "High School"}</SelectItem>
+                    <SelectItem value="3">{i18n["ob-education-higher"] || "Higher Degree"}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -223,7 +224,7 @@ export const OnboardingForm = ({
         </div>
 
         <div className="space-y-4 rounded-lg border p-4">
-          <h3 className="text-lg font-medium">Health & Lifestyle</h3>
+          <h3 className="text-lg font-medium">{i18n["ob-lifestyle-title"] || "Health & Lifestyle"}</h3>
           <div className="grid gap-6 md:grid-cols-2">
 
             {/* Body Metrics */}
@@ -232,7 +233,7 @@ export const OnboardingForm = ({
               name="height"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Height (cm)</FormLabel>
+                  <FormLabel>{i18n["ob-phys-height"] || "Height (cm)"}</FormLabel>
                   <FormControl>
                     <Input type="number" min={50} max={300} placeholder="e.g. 175" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                   </FormControl>
@@ -244,7 +245,7 @@ export const OnboardingForm = ({
               name="weight"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Weight (kg)</FormLabel>
+                  <FormLabel>{i18n["ob-phys-weight"] || "Weight (kg)"}</FormLabel>
                   <FormControl>
                     <Input type="number" min={20} max={500} placeholder="e.g. 70" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                   </FormControl>
@@ -258,10 +259,13 @@ export const OnboardingForm = ({
               name="family_history"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Family History of Alzheimer's?</FormLabel>
+                  <FormLabel>{i18n["ob-med-history-family"] || "Family History of Alzheimer's?"}</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                    <SelectContent>
+                      <SelectItem value="0">{i18n["ui-no"] || "No"}</SelectItem>
+                      <SelectItem value="1">{i18n["ui-yes"] || "Yes"}</SelectItem>
+                    </SelectContent>
                   </Select>
                 </FormItem>
               )}
@@ -272,10 +276,13 @@ export const OnboardingForm = ({
               name="diabetes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Do you have Diabetes?</FormLabel>
+                  <FormLabel>{i18n["ob-med-history-diabetes"] || "Do you have Diabetes?"}</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                    <SelectContent>
+                      <SelectItem value="0">{i18n["ui-no"] || "No"}</SelectItem>
+                      <SelectItem value="1">{i18n["ui-yes"] || "Yes"}</SelectItem>
+                    </SelectContent>
                   </Select>
                 </FormItem>
               )}
@@ -286,10 +293,13 @@ export const OnboardingForm = ({
               name="hypertension"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>High Blood Pressure?</FormLabel>
+                  <FormLabel>{i18n["ob-med-history-hypertension"] || "High Blood Pressure?"}</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                    <SelectContent>
+                      <SelectItem value="0">{i18n["ui-no"] || "No"}</SelectItem>
+                      <SelectItem value="1">{i18n["ui-yes"] || "Yes"}</SelectItem>
+                    </SelectContent>
                   </Select>
                 </FormItem>
               )}
@@ -300,10 +310,13 @@ export const OnboardingForm = ({
               name="smoking"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Do you Smoke?</FormLabel>
+                  <FormLabel>{i18n["ob-lifestyle-smoking"] || "Do you Smoke?"}</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent><SelectItem value="0">No</SelectItem><SelectItem value="1">Yes</SelectItem></SelectContent>
+                    <SelectContent>
+                      <SelectItem value="0">{i18n["ui-no"] || "No"}</SelectItem>
+                      <SelectItem value="1">{i18n["ui-yes"] || "Yes"}</SelectItem>
+                    </SelectContent>
                   </Select>
                 </FormItem>
               )}
@@ -314,7 +327,7 @@ export const OnboardingForm = ({
               name="alcohol_consumption"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Alcohol (Drinks/Week)</FormLabel>
+                  <FormLabel>{i18n["ob-lifestyle-alcohol"] || "Alcohol (Drinks/Week)"}</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                   </FormControl>
@@ -327,7 +340,7 @@ export const OnboardingForm = ({
               name="sleep_quality"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sleep Quality (1-10)</FormLabel>
+                  <FormLabel>{i18n["ob-lifestyle-sleep"] || "Sleep Quality (1-10)"}</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -343,7 +356,7 @@ export const OnboardingForm = ({
               name="physical_activity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Activity Level (0-10)</FormLabel>
+                  <FormLabel>{i18n["ob-lifestyle-activity"] || "Activity Level (0-10)"}</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -359,7 +372,7 @@ export const OnboardingForm = ({
               name="diet_quality"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Diet Quality (0-10)</FormLabel>
+                  <FormLabel>{i18n["ob-lifestyle-diet"] || "Diet Quality (0-10)"}</FormLabel>
                   <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -373,30 +386,7 @@ export const OnboardingForm = ({
           </div>
         </div>
 
-        <FormField
-          control={form.control}
-          name="language"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Preferred Language</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose your language" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {DEFAULT_LANGUAGES.map((language) => (
-                    <SelectItem key={language.value} value={language.value}>
-                      {language.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
 
         <FormField
           control={form.control}
@@ -412,12 +402,10 @@ export const OnboardingForm = ({
                 </FormControl>
                 <div className="space-y-1 text-sm">
                   <FormLabel className="text-base font-semibold">
-                    Consent & Privacy Agreement
+                    {i18n["ob-consent-label"] || "Consent & Privacy Agreement"}
                   </FormLabel>
                   <p className="text-muted-foreground">
-                    I confirm that I am providing my informed consent to record
-                    speech samples, store and analyze my cognitive assessment
-                    data, and process them securely for early dementia screening.
+                    {i18n["ob-consent-text"] || "I confirm that I am providing my informed consent to record speech samples, store and analyze my cognitive assessment data, and process them securely for early dementia screening."}
                   </p>
                 </div>
               </div>
@@ -427,8 +415,8 @@ export const OnboardingForm = ({
         />
 
         <div className="flex flex-col gap-3">
-          <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Registering..." : "Agree & Continue"}
+          <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+            {isLoading ? (i18n["ui-submitting"] || "Registering...") : (i18n["ob-submit-btn"] || "Agree & Continue")}
           </Button>
 
           <Button
@@ -438,7 +426,7 @@ export const OnboardingForm = ({
             className="w-full"
             onClick={() => navigate("/past-assessments")}
           >
-            Past Assessments
+            {i18n["ui-past-assessments"] || "Past Assessments"}
           </Button>
         </div>
       </form>

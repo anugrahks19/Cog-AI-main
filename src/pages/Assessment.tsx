@@ -242,37 +242,38 @@ const LANGUAGE_LABEL: Record<string, string> = {
   pa: "ਪੰਜਾਬੀ",
 };
 
-const STEP_CONFIG = [
+const getStepConfig = (i18n: Record<string, string>) => [
   {
     id: "consent",
-    title: "Onboarding & Consent",
+    title: i18n["ui-step-consent"] || "Onboarding & Consent",
     icon: ShieldCheck,
   },
   {
     id: "speech",
-    title: "Speech Assessment",
+    title: i18n["ui-step-speech"] || "Speech Assessment",
     icon: AudioWaveform,
   },
   {
     id: "cognitive",
-    title: "Cognitive Tasks",
+    title: i18n["ui-step-cognitive"] || "Cognitive Tasks",
     icon: ClipboardList,
   },
   {
     id: "results",
-    title: "AI Risk Summary",
+    title: i18n["ui-step-results"] || "AI Risk Summary",
     icon: BrainCircuit,
   },
-] as const;
+];
 
 const Assessment = () => {
   const { user, setUser, assessmentId, setAssessmentId, clearSession, auth, setAuth } = useUserSession();
+  const [uiLanguage, setUiLanguage] = useState(user?.language || "en");
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeechUploading, setIsSpeechUploading] = useState(false);
   const [result, setResult] = useState<AssessmentResult | null>(null);
-  const speechTasks = useMemo(() => getSpeechTasks(user?.language || "en"), [user?.language]);
-  const cognitiveTasks = useMemo(() => generateCognitiveTasks(user?.language || "en"), [user?.language]);
+  const speechTasks = useMemo(() => getSpeechTasks(uiLanguage), [uiLanguage]);
+  const cognitiveTasks = useMemo(() => generateCognitiveTasks(uiLanguage), [uiLanguage]);
   const [isResultPending, setIsResultPending] = useState(false);
   const [isAnalysisComplete, setIsAnalysisComplete] = useState(false);
   const [history, setHistory] = useState<AssessmentResult[]>([]);
@@ -287,7 +288,10 @@ const Assessment = () => {
   const minimumDurationRef = useRef<number | null>(null);
   const analysisStartTimeRef = useRef<number | null>(null);
 
-  const activeStep = STEP_CONFIG[activeStepIndex];
+  const i18n = useMemo(() => getLocalizedStrings(uiLanguage), [uiLanguage]);
+  const steps = useMemo(() => getStepConfig(i18n), [i18n]);
+
+  const activeStep = steps[activeStepIndex];
   const isAuthenticated = !!auth;
   const isOfflineMode = !ENABLE_BACKEND_APIS;
   const onboardingUnlocked = isOfflineMode || isAuthenticated;
@@ -391,15 +395,13 @@ const Assessment = () => {
         setHistory(arr);
       } else if (user) {
         setHistory(loadAssessmentHistory(user.id));
-      } else {
-        setHistory([]);
       }
     })();
   }, [auth, user]);
 
   const advanceStep = useCallback(() => {
-    setActiveStepIndex((index) => Math.min(index + 1, STEP_CONFIG.length - 1));
-  }, []);
+    setActiveStepIndex((index) => Math.min(index + 1, steps.length - 1));
+  }, [steps.length]);
 
   const resetAssessment = () => {
     clearSession();
@@ -478,7 +480,7 @@ const Assessment = () => {
         id: offlineAssessmentId,
         name: values.name,
         age: values.age,
-        language: values.language,
+        language: uiLanguage,
         consent: values.consent,
       };
       setUser(offlineUser);
@@ -524,7 +526,7 @@ const Assessment = () => {
         height: values.height,
         weight: values.weight,
 
-        language: values.language,
+        language: uiLanguage,
         consent: values.consent,
       };
       const response = await registerUser(payload);
@@ -599,7 +601,7 @@ const Assessment = () => {
         assessmentId,
         taskId,
         blob,
-        language: user.language,
+        language: uiLanguage,
         accessToken: user.accessToken,
         // pass duration to backend for analytics
         durationMs,
@@ -610,7 +612,7 @@ const Assessment = () => {
       setSpeechFeedback((prev) => ({ ...prev, [taskId]: response }));
 
       const detectedLabel = resolveLanguageLabel(response.detectedLanguage);
-      const selectedLabel = resolveLanguageLabel(user.language);
+      const selectedLabel = resolveLanguageLabel(uiLanguage);
       const confidenceText =
         typeof response.languageConfidence === "number"
           ? ` (confidence ${Math.round(response.languageConfidence * 100)}%)`
@@ -629,7 +631,7 @@ const Assessment = () => {
       } else if (response.languageMismatch) {
         toast({
           title: "Language mismatch detected",
-          description: `${baseDescription} ${detectedDescription} Selected language: ${selectedLabel ?? user.language.toUpperCase()
+          description: `${baseDescription} ${detectedDescription} Selected language: ${selectedLabel || uiLanguage.toUpperCase()
             }`,
           variant: "destructive",
         });
@@ -807,30 +809,52 @@ const Assessment = () => {
     }
   };
 
-  const languageLabel = useMemo(() => (user ? LANGUAGE_LABEL[user.language] ?? user.language : undefined), [user]);
+  const languageLabel = useMemo(() => (LANGUAGE_LABEL[uiLanguage] ?? uiLanguage), [uiLanguage]);
 
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-10">
         <header className="space-y-4 text-center">
-          <Badge variant="secondary">Clinical Screening Workflow</Badge>
-          <h1 className="text-4xl font-bold text-foreground">Mindful Cognitive Screening</h1>
+          <Badge variant="secondary">{i18n["ui-clinical-workflow"] || "Clinical Screening Workflow"}</Badge>
+          <h1 className="text-4xl font-bold text-foreground">{i18n["ui-app-title"] || "Mindful Cognitive Screening"}</h1>
           <p className="text-muted-foreground">
-            Complete a guided onboarding, record speech samples, finish cognitive tasks, and view an AI-powered
-            dementia risk summary in your preferred language.
+            {i18n["ui-app-desc"] || "Complete a guided onboarding, record speech samples, finish cognitive tasks, and view an AI-powered dementia risk summary in your preferred language."}
           </p>
         </header>
+
+        <Card className="shadow-card border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <ClipboardList className="w-5 h-5" />
+              {i18n["ui-language-select"] || "Select Language"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4 flex-wrap">
+              {Object.entries(LANGUAGE_LABEL).map(([code, label]) => (
+                <Button
+                  key={code}
+                  variant={uiLanguage === code ? "default" : "outline"}
+                  className="rounded-full"
+                  onClick={() => setUiLanguage(code)}
+                >
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Account options */}
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-muted-foreground">Account</CardTitle>
+            <CardTitle className="text-lg font-semibold text-muted-foreground">{i18n["ui-account-title"] || "Account"}</CardTitle>
           </CardHeader>
           <CardContent>
             {!auth ? (
               <div className="space-y-5">
                 <div>
-                  <p className="text-sm font-medium mb-2">Use secure cloud backup (optional)</p>
+                  <p className="text-sm font-medium mb-2">{i18n["ui-auth-cloud-title"] || "Use secure cloud backup (optional)"}</p>
                   <div className="flex gap-2 flex-wrap items-end">
                     <Button onClick={async () => {
                       try {
@@ -844,10 +868,10 @@ const Assessment = () => {
                       } catch (e) {
                         toast({ title: "Google sign-in failed", description: formatAuthError(e) });
                       }
-                    }}>Continue with Google</Button>
+                    }}>{i18n["ui-auth-google-btn"] || "Continue with Google"}</Button>
                     <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto_auto] items-end flex-1 min-w-[320px]">
-                      <input type="email" placeholder="you@example.com" className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} />
-                      <input type="password" placeholder="Password" className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} />
+                      <input type="email" placeholder={i18n["ui-auth-email-placeholder"] || "you@example.com"} className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} />
+                      <input type="password" placeholder={i18n["ui-auth-password-placeholder"] || "Password"} className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} />
                       <Button variant="outline" onClick={async () => {
                         if (!authEmail || !authPassword) {
                           toast({ title: "Missing credentials", description: "Enter both email and password." });
@@ -864,7 +888,7 @@ const Assessment = () => {
                         } catch (e) {
                           toast({ title: "Login failed", description: formatAuthError(e) });
                         }
-                      }}>Log in</Button>
+                      }}>{i18n["ui-auth-login-btn"] || "Log in"}</Button>
                       <Button className="btn-hero" onClick={async () => {
                         if (!authEmail || !authPassword) {
                           toast({ title: "Missing credentials", description: "Enter both email and password." });
@@ -882,32 +906,32 @@ const Assessment = () => {
                           setAuthPassword("");
                           toast({ title: "Account created", description: "You can now start onboarding." });
                         } catch (e) { toast({ title: "Sign up failed", description: formatAuthError(e) }); }
-                      }}>Sign up</Button>
+                      }}>{i18n["ui-auth-signup-btn"] || "Sign up"}</Button>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Storage: Encrypted cloud workspace linked to your email (assessment reports and derived scores only).</p>
+                  <p className="text-xs text-muted-foreground mt-2">{i18n["ui-auth-storage-cloud-note"] || "Storage: Encrypted cloud workspace linked to your email (assessment reports and derived scores only)."}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium mb-2">Or use local-only encrypted storage (device)</p>
+                  <p className="text-sm font-medium mb-2">{i18n["ui-auth-local-title"] || "Or use local-only encrypted storage (device)"}</p>
                   <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto_auto] items-end">
                     <div>
-                      <label className="block text-xs mb-1 text-muted-foreground">Email (for anonymous ID)</label>
-                      <input type="email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" placeholder="you@example.com" />
+                      <label className="block text-xs mb-1 text-muted-foreground">{i18n["ui-auth-local-email-label"] || "Email (for anonymous ID)"}</label>
+                      <input type="email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" placeholder={i18n["ui-auth-email-placeholder"] || "you@example.com"} />
                     </div>
                     <div>
-                      <label className="block text-xs mb-1 text-muted-foreground">Local Password</label>
-                      <input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" placeholder="••••••••" />
+                      <label className="block text-xs mb-1 text-muted-foreground">{i18n["ui-auth-local-password-label"] || "Local Password"}</label>
+                      <input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground" placeholder={i18n["ui-auth-password-placeholder"] || "••••••••"} />
                     </div>
-                    <Button variant="outline" onClick={handleAuthLogin}>Log in</Button>
-                    <Button className="btn-hero" onClick={handleAuthSignup}>Sign up</Button>
+                    <Button variant="outline" onClick={handleAuthLogin}>{i18n["ui-auth-login-btn"] || "Log in"}</Button>
+                    <Button className="btn-hero" onClick={handleAuthSignup}>{i18n["ui-auth-signup-btn"] || "Sign up"}</Button>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Storage: Encrypted in your browser (LocalStorage). Data stays on this device.</p>
+                  <p className="text-xs text-muted-foreground mt-2">{i18n["ui-auth-storage-local-note"] || "Storage: Encrypted in your browser (LocalStorage). Data stays on this device."}</p>
                 </div>
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">Signed in as <strong>{auth.email}</strong> ({auth.provider === "firebase" ? "Cloud backup" : "On-device encrypted"}) ID: {auth.userId}</div>
-                <Button variant="outline" onClick={handleAuthLogout}>Sign out</Button>
+                <div className="text-sm text-muted-foreground">{i18n["ui-auth-signed-in-as"] || "Signed in as"} <strong>{auth.email}</strong> ({auth.provider === "firebase" ? i18n["ui-auth-cloud-backup"] || "Cloud backup" : i18n["ui-auth-local-encrypted"] || "On-device encrypted"}) ID: {auth.userId}</div>
+                <Button variant="outline" onClick={handleAuthLogout}>{i18n["ui-auth-signout-btn"] || "Sign out"}</Button>
               </div>
             )}
           </CardContent>
@@ -917,9 +941,9 @@ const Assessment = () => {
           <Card className="border-yellow-500/60 bg-yellow-500/5">
             <CardContent className="py-6">
               <div className="space-y-2 text-sm">
-                <p className="font-semibold text-yellow-700">Sign in to continue</p>
+                <p className="font-semibold text-yellow-700">{i18n["ui-auth-signin-required"] || "Sign in to continue"}</p>
                 <p className="text-muted-foreground">
-                  For security, the assessment workflow only unlocks after you log in using the options above. Once signed in, onboarding and recording steps will become available.
+                  {i18n["ui-auth-signin-note"] || "For security, the assessment workflow only unlocks after you log in using the options above. Once signed in, onboarding and recording steps will become available."}
                 </p>
               </div>
             </CardContent>
@@ -928,11 +952,11 @@ const Assessment = () => {
 
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-muted-foreground">Assessment Progress</CardTitle>
+            <CardTitle className="text-lg font-semibold text-muted-foreground">{i18n["ui-assessment-progress"] || "Assessment Progress"}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-4">
-              {STEP_CONFIG.map((step, index) => {
+              {steps.map((step, index) => {
                 const Icon = step.icon;
                 const isActive = index === activeStepIndex;
                 const isCompleted = index < activeStepIndex;
@@ -959,14 +983,20 @@ const Assessment = () => {
 
         {activeStep.id === "consent" && isAuthenticated && (
           <div className="max-w-3xl mx-auto">
-            <OnboardingForm user={user} onSubmit={handleOnboardingSubmit} isSubmitting={isLoading} />
+            <OnboardingForm
+              user={user}
+              onSubmit={handleOnboardingSubmit}
+              isLoading={isLoading}
+              uiLanguage={uiLanguage}
+              i18n={i18n}
+            />
           </div>
         )}
 
         {activeStep.id === "speech" && isAuthenticated && user && assessmentId && (
           <div className="space-y-6">
             <SpeechRecorder
-              language={user.language}
+              language={uiLanguage}
               tasks={speechTasks}
               feedback={speechFeedback}
               isUploading={isSpeechUploading}
@@ -976,9 +1006,14 @@ const Assessment = () => {
           </div>
         )}
 
-        {activeStep.id === "cognitive" && assessmentId && (
+        {activeStep.id === "cognitive" && assessmentId && user && (
           <div className="space-y-6">
-            <CognitiveTasks tasks={cognitiveTasks} onComplete={handleCognitiveComplete} isSubmitting={isLoading} />
+            <CognitiveTasks
+              tasks={cognitiveTasks}
+              onComplete={handleCognitiveComplete}
+              isSubmitting={isLoading}
+              language={user.language}
+            />
           </div>
         )}
 
