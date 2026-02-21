@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Link } from "react-router-dom";
 import { fetchAssessmentResult, AssessmentResult } from "@/services/api";
 import { RiskResultCard } from "@/components/assessment/RiskResultCard";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
+import { loadGlobalReports } from "@/lib/firebase";
 
 export default function VerifyReport() {
     const { id } = useParams<{ id: string }>();
+    const [searchParams] = useSearchParams();
     const [result, setResult] = useState<AssessmentResult | null>(null);
+    const [patientName, setPatientName] = useState<string | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -17,16 +20,45 @@ export default function VerifyReport() {
             try {
                 setIsLoading(true);
                 setError(null);
-                if (id.startsWith("offline-")) {
-                    setError("This report was generated offline or locally and is not synced to the cloud. It can only be viewed on the original device.");
-                    setIsLoading(false);
-                    return;
+
+                // Option 1: Direct payload decoding from QR code
+                const dataParam = searchParams.get("data");
+                if (dataParam) {
+                    try {
+                        const parsed = JSON.parse(atob(dataParam));
+                        setPatientName(parsed.n);
+                        setResult({
+                            assessmentId: parsed.id,
+                            riskLevel: parsed.r,
+                            probability: parsed.p,
+                            subScores: parsed.s,
+                            generatedAt: parsed.d,
+                            featureImportances: [], // Omitted from QR to save space
+                            recommendations: []     // Omitted from QR to save space
+                        } as AssessmentResult);
+                        setIsLoading(false);
+                        return;
+                    } catch (e) {
+                        console.error("Failed to decode QR payload", e);
+                        // Fallback to fetch if decode fails
+                    }
                 }
 
-                // Note: For public verification, we ideally wouldn't need an access token,
-                // or the backend would allow GET /api/assessments/{id}/result without auth
-                const data = await fetchAssessmentResult(id);
-                setResult(data);
+                // Option 2: Fallback to global database lookup
+                try {
+                    const reports = await loadGlobalReports();
+                    const found = reports.find(r => r.assessmentId === id);
+                    if (found) {
+                        const anyFound = found as any;
+                        setPatientName(anyFound.patientSummary?.name);
+                        setResult(found);
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Firebase lookup failed", e);
+                }
+
+                setError("Could not load the medical report. Scan a valid QR code or ensure the report was permanently saved.");
             } catch (err: any) {
                 console.error("Failed to load assessment report:", err);
                 setError("Could not load the medical report. It may not exist, is private, or hasn't been synced.");
@@ -36,7 +68,7 @@ export default function VerifyReport() {
         }
 
         loadResult();
-    }, [id]);
+    }, [id, searchParams]);
 
     return (
         <div className="container max-w-5xl py-12 animate-fade-in">
@@ -63,7 +95,7 @@ export default function VerifyReport() {
                 </div>
             ) : result ? (
                 <div className="space-y-8 animate-slide-up">
-                    <RiskResultCard result={result} />
+                    <RiskResultCard result={result} patientName={patientName} />
                 </div>
             ) : null}
         </div>
