@@ -9,7 +9,7 @@ import VisualSearchGame from "@/components/games/VisualSearchGame";
 import SequenceMemory from "@/components/games/SequenceMemory";
 import WordRecall from "@/components/games/WordRecall";
 import GoNoGo from "@/components/games/GoNoGo";
-import CardSorting from "@/components/games/CardSorting";
+import JigsawPuzzle from "@/components/games/JigsawPuzzle";
 import MentalMath from "@/components/games/MentalMath";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -78,7 +78,7 @@ export default function BrainGym() {
                     <TabsContent value="attention" className="space-y-6 animate-slide-up">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <GameCard title="Reaction Time" desc="Test your raw reflexes" icon={Zap} component={<ReactionTest />} />
-                            <GameCard title="Stroop Test" desc="Inhibit cognitive interference" icon={Dumbbell} component={<StroopTest />} />
+                            <GameCard title="Stroop Test" desc="Don't get tricked by the color!" icon={Dumbbell} component={<StroopTest />} />
                             <div className="md:col-span-2">
                                 <GameCard title="Visual Search" desc="Find targets in a cluttered field" icon={Target} component={<VisualSearchGame />} />
                             </div>
@@ -100,7 +100,7 @@ export default function BrainGym() {
                     <TabsContent value="executive" className="space-y-6 animate-slide-up">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <GameCard title="Go / No-Go" desc="Impulse control & inhibition" icon={Zap} component={<GoNoGo />} />
-                            <GameCard title="Rule Shift" desc="Cognitive flexibility (Card Sort)" icon={Dumbbell} component={<CardSorting />} />
+                            <GameCard title="Jigsaw Puzzle" desc="Spatial reasoning & logic" icon={Dumbbell} component={<JigsawPuzzle />} />
                         </div>
                     </TabsContent>
 

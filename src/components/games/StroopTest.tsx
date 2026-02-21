@@ -66,8 +66,8 @@ export default function StroopTest() {
                     <h3 className="text-3xl font-bold">Stroop Session Complete!</h3>
                     <p className="text-xl text-muted-foreground">Focus Score: <span className="font-bold text-primary">{score}</span></p>
                 </div>
-                <Button onClick={startGame} size="lg" className="w-48 gap-2">
-                    <RotateCcw className="h-4 w-4" /> Train Again
+                <Button onClick={() => setIsFinished(false)} size="lg" className="w-48 gap-2">
+                    <RotateCcw className="h-4 w-4" /> Back to Instructions
                 </Button>
             </Card>
         );
@@ -81,10 +81,10 @@ export default function StroopTest() {
                     <div className="bg-muted/30 p-4 rounded-xl text-left text-sm space-y-2 max-w-xs mx-auto">
                         <p className="font-semibold text-foreground">How to Play:</p>
                         <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                            <li>Look at the <b>INK COLOR</b> of the word.</li>
-                            <li>Ignore what the word actually says.</li>
-                            <li>Click <b>Match</b> if the ink color equals the word text.</li>
-                            <li>Otherwise, click <b>Mismatch</b>.</li>
+                            <li>Focus on the color of the word.</li>
+                            <li>Decide if the color and the word meaning are the same.</li>
+                            <li>Tap Match if they are the same.</li>
+                            <li>Tap Mismatch if they are different</li>
                         </ul>
                     </div>
 

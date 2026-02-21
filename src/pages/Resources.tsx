@@ -70,8 +70,14 @@ const Resources = () => {
     { name: "Community", count: articles.filter(a => a.category === "Community").length }
   ];
 
-  const featuredArticles = articles.filter(article => article.featured);
-  const regularArticles = articles.filter(article => !article.featured);
+  const [activeCategory, setActiveCategory] = useState("All Articles");
+
+  const filteredArticles = activeCategory === "All Articles"
+    ? articles
+    : articles.filter(a => a.category === activeCategory);
+
+  const featuredArticles = filteredArticles.filter(article => article.featured);
+  const regularArticles = filteredArticles.filter(article => !article.featured);
 
   const { toast } = useToast();
   const [subscriberEmail, setSubscriberEmail] = useState("");
@@ -284,12 +290,13 @@ const Resources = () => {
       <section className="py-8 px-4 sm:px-6 lg:px-8 border-b border-border">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-wrap gap-4 justify-center">
-            {categories.map((category, index) => (
+            {categories.map((category) => (
               <button
                 key={category.name}
-                className={`px-4 py-2 rounded-full transition-all duration-300 ${index === 0
-                    ? "bg-primary text-primary-foreground shadow-soft"
-                    : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                onClick={() => setActiveCategory(category.name)}
+                className={`px-4 py-2 rounded-full cursor-pointer transition-all duration-300 ${activeCategory === category.name
+                  ? "bg-primary text-primary-foreground shadow-soft"
+                  : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   }`}
               >
                 {category.name} ({category.count})

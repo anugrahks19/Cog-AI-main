@@ -5,13 +5,32 @@ import { Wind, PlayCircle } from "lucide-react";
 
 export default function Breathwork() {
     const [isActive, setIsActive] = useState(false);
-    const [phase, setPhase] = useState<"Inhale" | "Hold" | "Exhale">("Inhale");
+    const [phase, setPhase] = useState<"Breathe In" | "Hold Your Breath" | "Breathe Out">("Breathe In");
     const [timeLeft, setTimeLeft] = useState(60);
 
     useEffect(() => {
         if (!isActive) return;
 
-        // Timer for session
+        let isCancelled = false;
+        let timer: NodeJS.Timeout;
+
+        const cycle = async () => {
+            while (!isCancelled) {
+                setPhase("Breathe In");
+                await new Promise(r => { timer = setTimeout(r, 4000); });
+                if (isCancelled) break;
+                
+                setPhase("Hold Your Breath");
+                await new Promise(r => { timer = setTimeout(r, 7000); });
+                if (isCancelled) break;
+
+                setPhase("Breathe Out");
+                await new Promise(r => { timer = setTimeout(r, 8000); });
+            }
+        };
+        
+        cycle();
+
         const sessionTimer = setInterval(() => {
             setTimeLeft((prev) => {
                 if (prev <= 1) {
@@ -22,29 +41,11 @@ export default function Breathwork() {
             });
         }, 1000);
 
-        // Breathing Cycle: 4-4-4 (Box Breathing simplified)
-        // Actually, usually Inhale (4), Hold (4), Exhale (4), Hold (4).
-        // Let's do Inhale (4), Exhale (4) for simplicity or 4-7-8.
-        // Let's do simple 4-4-4 for visual symmetry.
-
-        const cycle = async () => {
-            while (isActive) {
-                setPhase("Inhale");
-                await new Promise(r => setTimeout(r, 4000));
-                if (!isActive) break;
-                setPhase("Hold");
-                await new Promise(r => setTimeout(r, 4000));
-                if (!isActive) break;
-                setPhase("Exhale");
-                await new Promise(r => setTimeout(r, 4000));
-            }
+        return () => {
+            isCancelled = true;
+            clearTimeout(timer);
+            clearInterval(sessionTimer);
         };
-
-        // This hook structure is a bit tricky for async loops. 
-        // Let's use CSS animations for the visual and just simple text updates via interval if needed.
-        // Actually, CSS is better for smoothness.
-
-        return () => clearInterval(sessionTimer);
     }, [isActive]);
 
     return (
@@ -72,8 +73,8 @@ export default function Breathwork() {
                         <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping-slow"></div>
                         <div className="absolute inset-0 bg-blue-400/20 rounded-full animate-pulse-slow delay-75"></div>
                         <div className="h-48 w-48 bg-white/80 dark:bg-card/80 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center z-20 animate-breathe">
-                            <span className="text-2xl font-bold text-cyan-800 tracking-widest">
-                                BREATHE
+                            <span className="text-xl md:text-2xl font-bold text-cyan-800 tracking-widest text-center px-4">
+                                {phase.toUpperCase()}
                             </span>
                         </div>
                     </div>

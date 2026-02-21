@@ -1,4 +1,4 @@
-import { Brain, Smartphone, Shield, FileText, Clock, Users } from "lucide-react";
+import { Brain, Monitor, Shield, FileText, Clock, Users } from "lucide-react";
 
 const Features = () => {
   const mainFeatures = [
@@ -15,12 +15,12 @@ const Features = () => {
       ],
     },
     {
-      icon: Smartphone,
+      icon: Monitor,
       title: "Easy Interface",
       description:
-        "Intuitive design that works seamlessly across mobile devices and desktop computers, accessible for users of all technical skill levels.",
+        "Intuitive design that works seamlessly across desktop computers, accessible for users of all technical skill levels.",
       benefits: [
-        "Mobile-first responsive design",
+        "Responsive desktop design",
         "Large, clear buttons and text",
         "Voice guidance available",
         "Offline capability for tests",
@@ -186,7 +186,7 @@ const Features = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/assessment" className="btn-hero">Start Assessment</a>
-            <a href="/contact" className="btn-secondary">Request Full Access</a>
+            <a href="/contact" className="btn-secondary">For more details</a>
           </div>
         </div>
       </section>

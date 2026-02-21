@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const HospitalFinder = () => {
   const [status, setStatus] = useState<"idle" | "locating" | "denied" | "unsupported" | "error">("idle");
   const [message, setMessage] = useState<string>("");
+  const [mapUrl, setMapUrl] = useState("https://maps.google.com/maps?q=hospitals+near+me&output=embed");
 
   const openGeneralSearch = () => {
     window.open("https://www.google.com/maps/search/hospitals+near+me", "_blank", "noopener,noreferrer");
@@ -14,7 +15,8 @@ const HospitalFinder = () => {
   const handleLocate = () => {
     if (typeof window === "undefined" || !("geolocation" in navigator)) {
       setStatus("unsupported");
-      setMessage("Location access is not available in this browser. Use the general search instead.");
+      setMessage("Location access is not available in this browser. Showing general results on map.");
+      setMapUrl("https://maps.google.com/maps?q=hospitals+near+me&output=embed");
       return;
     }
 
@@ -24,19 +26,19 @@ const HospitalFinder = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        const mapsUrl = `https://www.google.com/maps/search/hospitals/@${latitude},${longitude},15z`;
-        window.open(mapsUrl, "_blank", "noopener,noreferrer");
+        setMapUrl(`https://maps.google.com/maps?q=hospitals+near+${latitude},${longitude}&output=embed`);
         setStatus("idle");
-        setMessage("Opened nearby hospital results in Google Maps.");
+        setMessage("Map updated with your exact location.");
       },
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
           setStatus("denied");
-          setMessage("Permission denied. Please enable location access or use the general hospital search link.");
+          setMessage("Permission denied. Try using the manual search link or check browser settings.");
         } else {
           setStatus("error");
-          setMessage("Could not fetch your location. Try again or use the general hospital search link.");
+          setMessage("Could not fetch your location. Showing general hospital search.");
         }
+        setMapUrl("https://maps.google.com/maps?q=hospitals+near+me&output=embed");
       },
       { enableHighAccuracy: true, timeout: 12_000, maximumAge: 0 },
     );
@@ -148,25 +150,39 @@ const HospitalFinder = () => {
               <div className="flex flex-wrap gap-3">
                 <Button onClick={handleLocate} disabled={status === "locating"} className="flex items-center gap-2">
                   {status === "locating" ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-                  Locate me & open map
+                  Locate me on map
                 </Button>
                 <Button variant="outline" onClick={openGeneralSearch} className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  Open hospital search
+                  Open in Google Maps
                 </Button>
               </div>
+
+              <div className="w-full h-[450px] mt-4 rounded-xl overflow-hidden border border-border shadow-inner bg-muted/20">
+                <iframe
+                  src={mapUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Hospital Map"
+                ></iframe>
+              </div>
+
               {message && (
-                <div className="text-sm text-muted-foreground border border-border rounded-md p-3 bg-muted/40">
+                <div className="text-sm text-muted-foreground border border-border rounded-md p-3 bg-muted/40 animate-in fade-in">
                   {message}
                 </div>
               )}
               {status === "denied" && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground animate-in fade-in">
                   Permission denied. Clear the location block in your browser settings and try again, or use the manual search link above.
                 </p>
               )}
               {status === "unsupported" && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground animate-in fade-in">
                   Your device or browser does not support geolocation. Please use the hospital search link instead.
                 </p>
               )}

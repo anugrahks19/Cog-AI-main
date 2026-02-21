@@ -66,6 +66,7 @@ const Footer = () => {
           {/* Legal */}
           <div>
             <h3 className="font-semibold text-foreground mb-4">Legal</h3>
+            <p className="text-xs text-muted-foreground mb-2">Last updated in 2026</p>
             <div className="space-y-2">
               <a
                 href="https://www.freeprivacypolicy.com/live/2f8ae647-8c7a-4bbb-8311-bd01f9664f05"
@@ -124,7 +125,7 @@ const Footer = () => {
             </a>
           </div>
           <p className="text-sm text-muted-foreground">
-            © 2025 Cog.ai. All rights reserved.
+            © 2026 Cog.ai. All rights reserved.
           </p>
         </div>
       </div>

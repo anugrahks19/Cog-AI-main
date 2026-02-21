@@ -26,8 +26,12 @@ const Index = () => {
               <span className="text-3xl sm:text-4xl">Early Detection, Better Care</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 animate-slide-up">
-              AI-powered early dementia detection app. Helping families and doctors detect cognitive issues early through simple tests and easy-to-understand reports.
+              AI-powered early dementia detection and monitoring app. Helping families and doctors detect cognitive issues early through simple tests and easy-to-understand reports.
             </p>
+
+            <div className="max-w-2xl mx-auto mb-8 p-4 bg-destructive/10 border border-destructive/20 rounded-xl animate-fade-in text-destructive text-sm sm:text-base font-medium">
+              Note: Cog.ai is a research prototype. Not a medical device.
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
               <Link
