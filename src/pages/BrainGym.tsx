@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, Brain, Zap, Activity, Flame, Trophy, Wind, BookOpen, Calculator, Target } from "lucide-react";
+import { Dumbbell, Brain, Zap, Activity, Flame, Trophy, Wind, BookOpen, Calculator, Target, Star } from "lucide-react";
 import StroopTest from "@/components/games/StroopTest";
 import NBackGame from "@/components/games/NBackGame";
 import Breathwork from "@/components/games/Breathwork";
@@ -28,28 +28,93 @@ export default function BrainGym() {
 
             <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
 
-                {/* Engagement Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center bg-white/60 dark:bg-card/60 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-2xl p-4 mb-8 shadow-sm animate-fade-in">
-                    <div className="flex items-center gap-4 mb-4 md:mb-0">
-                        <div className="p-3 bg-gradient-to-br from-orange-400 to-red-500 text-white rounded-xl shadow-md">
-                            <Flame className="h-6 w-6 animate-pulse" />
+                {/* Engagement Dashboard */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12 animate-fade-in">
+                    {/* Card 1: Streak */}
+                    <div className="bg-white/80 dark:bg-[#1a172c]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-3xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/5 dark:from-indigo-500/10 to-transparent pointer-events-none" />
+                        <div className="flex items-center gap-4 mb-8 relative z-10">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7e57c2]/20 dark:from-[#7e57c2]/40 to-[#5e35b1]/20 dark:to-[#5e35b1]/40 flex items-center justify-center border border-indigo-200 dark:border-white/10 shadow-[inset_0_2px_10px_rgba(255,255,255,0.1)]">
+                                <Flame className="h-8 w-8 text-indigo-600 dark:text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                    {streak} Day Streak <span className="text-orange-500 animate-pulse text-xl">🔥</span>
+                                </h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Keep it going!</p>
+                            </div>
                         </div>
-                        <div>
-                            <div className="text-2xl font-bold text-foreground">{streak} Day Streak</div>
-                            <div className="text-xs text-muted-foreground">Level {level} Brain Athlete</div>
+                        <div className="flex justify-between items-center relative z-10">
+                            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+                                const isStreakActive = i >= 4; // Visual mock for Fri, Sat, Sun
+                                return (
+                                    <div key={day} className="flex flex-col items-center gap-2">
+                                        <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border transition-all ${isStreakActive ? 'bg-[#c58dfc] border-transparent shadow-[0_0_20px_rgba(197,141,252,0.4)]' : 'bg-slate-100 dark:bg-[#1e1b33] border-slate-200 dark:border-transparent shadow-inner'}`}>
+                                            {isStreakActive ? <Flame className="h-5 w-5 text-white" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />}
+                                        </div>
+                                        <span className="text-xs text-slate-500 font-medium">{day}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6 w-full md:w-auto">
-                        <div className="flex-1 md:w-64">
-                            <div className="flex justify-between text-xs font-semibold mb-1">
-                                <span>XP Progress</span>
-                                <span className="text-primary">{xp} / 2000</span>
+                    {/* Card 2: Level */}
+                    <div className="bg-white/80 dark:bg-[#1a172c]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-3xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                        <div className="flex justify-between items-start mb-6 relative z-10">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/10 dark:from-purple-500/30 to-[#ba68c8]/10 dark:to-[#ba68c8]/30 flex items-center justify-center border border-purple-200 dark:border-white/10 shadow-[inset_0_2px_10px_rgba(255,255,255,0.1)]">
+                                    <Trophy className="h-6 w-6 text-purple-600 dark:text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-slate-800 dark:text-white">Level {level}</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Brain Athlete</p>
+                                </div>
                             </div>
-                            <Progress value={(xp / 2000) * 100} className="h-2.5" />
+                            <div className="bg-indigo-50 dark:bg-indigo-500/20 px-4 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-500/30">
+                                <span className="text-sm font-bold text-indigo-600 dark:text-indigo-300">{xp} XP</span>
+                            </div>
                         </div>
-                        <div className="p-2 bg-yellow-100 rounded-full text-yellow-700">
-                            <Trophy className="h-5 w-5" />
+                        <div className="relative z-10">
+                            <div className="flex justify-between text-sm mb-3 text-slate-600 dark:text-slate-300">
+                                <span className="font-medium">Next: Level 7</span>
+                                <span className="font-medium">73%</span>
+                            </div>
+                            <div className="h-2.5 rounded-full bg-slate-100 dark:bg-[#1e1b33] mb-3 overflow-hidden border border-slate-200 dark:border-white/5 shadow-inner">
+                                <div className="h-full bg-gradient-to-r from-[#4dd0e1] to-[#81d4fa] rounded-full shadow-[0_0_15px_rgba(77,208,225,0.6)]" style={{ width: '73%' }} />
+                            </div>
+                            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                <span>{xp} XP Current</span>
+                                <span className="text-indigo-600 dark:text-indigo-400">550 to Mastery</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Card 3: Recent Gains */}
+                    <div className="bg-white/80 dark:bg-[#1a172c]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-3xl p-6 shadow-xl relative overflow-hidden flex flex-col">
+                        <div className="flex items-center gap-2 mb-5 relative z-10">
+                            <Star className="h-5 w-5 text-purple-600 dark:text-purple-400 fill-purple-600 dark:fill-purple-400" />
+                            <h3 className="font-semibold text-slate-800 dark:text-white">Recent Gains</h3>
+                        </div>
+                        <div className="space-y-4 relative z-10">
+                            {[
+                                { name: "Stroop Test", time: "2 mins ago", xp: "+120", icon: <Zap className="h-3.5 w-3.5" /> },
+                                { name: "Daily Streak Bonus", time: "1 hour ago", xp: "+50", icon: <Flame className="h-3.5 w-3.5" /> },
+                                { name: "N-Back", time: "3 hours ago", xp: "+200", icon: <Brain className="h-3.5 w-3.5" /> },
+                            ].map((gain, i) => (
+                                <div key={i} className={`flex items-center justify-between ${i !== 2 ? 'pb-4 border-b border-slate-100 dark:border-white/5' : ''}`}>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                                            {gain.icon}
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 leading-tight mb-0.5">{gain.name}</div>
+                                            <div className="text-xs text-slate-500">{gain.time}</div>
+                                        </div>
+                                    </div>
+                                    <div className="font-bold text-sm text-slate-600 dark:text-slate-300">{gain.xp}</div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
