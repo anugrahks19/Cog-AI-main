@@ -153,7 +153,7 @@ class RiskPredictor:
             return self._fallback(features)
 
         tab = features.get("tabular", {})
-        speech_raw = features.get("speech_embedding", [0.0] * 768)
+        speech_raw = features.get("speech_embedding", [0.0] * 82)
         
         # 1. Construct Tabular part (15 features)
         diabetes = tab.get("Diabetes", 0)
@@ -270,18 +270,33 @@ class PipelineManager:
         for sample in samples:
             try:
                 audio, sr = self.audio_feature_extractor.load_audio(sample.file_path)
-                audio_feature_map[sample.task_id] = self.audio_feature_extractor.extract_features(audio, sr)
-                speech_embeddings.append(self.speech_embedding_extractor.get_embeddings(audio, sr))
-            except Exception:
+                features = self.audio_feature_extractor.extract_features(audio, sr)
+                audio_feature_map[sample.task_id] = features
+                
+                # Construct 82-dim vector for this sample
+                # 40 mfcc_mean + 40 mfcc_std + 1 rolloff + 1 zero_cross
+                vec = []
+                vec.extend(features.get("mfcc_mean", [0]*40))
+                vec.extend(features.get("mfcc_std", [0]*40))
+                vec.append(features.get("spectral_rolloff_mean", 0.0))
+                vec.append(features.get("zero_cross_mean", 0.0))
+                
+                # Pad/Truncate just in case
+                if len(vec) > 82: vec = vec[:82]
+                while len(vec) < 82: vec.append(0.0)
+                
+                speech_embeddings.append(np.array(vec, dtype=np.float32))
+            except Exception as e:
+                print(f"Error extracting audio features: {e}")
                 continue
 
             if sample.transcript: transcript_tokens.extend(sample.transcript.split())
             if sample.detected_language: languages.append(sample.detected_language)
 
         if speech_embeddings:
-            speech_embedding = np.mean(np.concatenate(speech_embeddings, axis=0), axis=0).tolist()
+            speech_embedding = np.mean(np.concatenate([e.reshape(1, -1) for e in speech_embeddings], axis=0), axis=0).tolist()
         else:
-            speech_embedding = [0.0] * 768
+            speech_embedding = [0.0] * 82
 
         # --- DATASET MAPPING (Alzheimer's Disease Dataset - Rabie El Kharoua) ---
         

@@ -19,6 +19,7 @@ from app.services.assessments import (
 )
 from app.services.storage import store_audio_file
 from app.services.transformers import assemble_assessment_result
+from app.services.email_service import send_risk_alert_email
 from app.utils.auth import get_current_user
 
 router = APIRouter()
@@ -125,4 +126,20 @@ def get_prediction_result(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prediction not ready")
 
     result = assemble_assessment_result(assessment, prediction)
+    
+    # Feature 2: Trigger Async Email if High Risk
+    if result.risk_level == "High":
+        user_email = assessment.user.email if hasattr(assessment, 'user') and assessment.user else "doctor@example.com"
+        patient_name = assessment.user.full_name if hasattr(assessment, 'user') and assessment.user else "Anonymous"
+        
+        # Dispatch email (this is simulated via print since we don't block the request)
+        send_risk_alert_email(
+            recipient_email=user_email,
+            assessment_id=str(assessment.id),
+            risk_level=result.risk_level,
+            probability=result.probability,
+            feature_importances=[f.dict() for f in result.feature_importances],
+            patient_name=patient_name
+        )
+
     return result

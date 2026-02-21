@@ -343,7 +343,7 @@ export const SpeechRecorder = ({
             };
             try {
               (recorder as any).requestData?.();
-            } catch {}
+            } catch { }
             recorder.stop();
           }
         }, currentTask.maxDurationMs);
@@ -362,7 +362,7 @@ export const SpeechRecorder = ({
     if (recorder && recorder.state === "recording") {
       try {
         (recorder as any).requestData?.();
-      } catch {}
+      } catch { }
       recorder.stop();
     }
   };
@@ -479,6 +479,33 @@ export const SpeechRecorder = ({
               disabled={!canNarrate}
             >
               {isNarrating ? "Stop Story" : "Play Story"}
+            </Button>
+          )}
+
+          {/* Development fast-forward mock button */}
+          {import.meta.env.DEV && !isRecording && (
+            <Button
+              type="button"
+              size="lg"
+              variant="secondary"
+              className="opacity-70"
+              onClick={async () => {
+                try {
+                  const dummyBlob = new Blob(["dummy audio"], { type: "audio/webm" });
+                  await onUpload({ taskId: currentTask.id, blob: dummyBlob, durationMs: 1000 });
+                  unlockDependents(currentTask.id);
+                  if (currentIndex < tasks.length - 1) {
+                    setCurrentIndex((index) => index + 1);
+                    setElapsedMs(0);
+                  } else {
+                    onComplete();
+                  }
+                } catch (e) {
+                  toast({ title: "Dev skip failed", description: String(e) });
+                }
+              }}
+            >
+              Skip (Dev)
             </Button>
           )}
           {!isRecording && !isLocked && (

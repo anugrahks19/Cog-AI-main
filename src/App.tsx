@@ -20,6 +20,7 @@ import HospitalFinder from "./pages/HospitalFinder";
 import ClinicianDashboard from "./pages/ClinicianDashboard";
 import BrainGym from "./pages/BrainGym";
 import Pricing from "./pages/Pricing";
+import PastAssessments from "./pages/PastAssessments";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const AppContent = () => {
             <Route path="/features" element={<Features />} />
             <Route path="/demo" element={<Navigate to="/assessment" replace />} />
             <Route path="/assessment" element={<Assessment />} />
+            <Route path="/past-assessments" element={<PastAssessments />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/pricing" element={<Pricing />} /> {/* Added Pricing route */}

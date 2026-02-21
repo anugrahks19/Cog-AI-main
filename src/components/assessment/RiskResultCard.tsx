@@ -135,44 +135,44 @@ export const RiskResultCard = ({ result, languageLabel }: RiskResultCardProps) =
               <p className="text-sm font-medium text-muted-foreground">Memory</p>
               <div className="space-y-2 mt-1">
                 <div className="flex items-center justify-between text-xs"><span>Normal</span><span>100%</span></div>
-                <Progress value={100} className="h-1.5" />
+                <Progress value={100} className="h-1.5" indicatorClassName="bg-primary" />
                 <div className="flex items-center justify-between text-xs"><span>Patient</span><span>{Math.round(normalized.memory)}%</span></div>
-                <Progress value={normalized.memory} className="h-1.5" />
+                <Progress value={normalized.memory} className="h-1.5" indicatorClassName="bg-secondary" />
                 <div className="flex items-center justify-between text-xs"><span>Dementia</span><span>{Math.round(dementiaPct.memory)}%</span></div>
-                <Progress value={dementiaPct.memory} className="h-1.5" />
+                <Progress value={dementiaPct.memory} className="h-1.5" indicatorClassName="bg-destructive/70" />
               </div>
             </div>
             <div className="rounded-lg border p-3">
               <p className="text-sm font-medium text-muted-foreground">Attention</p>
               <div className="space-y-2 mt-1">
                 <div className="flex items-center justify-between text-xs"><span>Normal</span><span>100%</span></div>
-                <Progress value={100} className="h-1.5" />
+                <Progress value={100} className="h-1.5" indicatorClassName="bg-primary" />
                 <div className="flex items-center justify-between text-xs"><span>Patient</span><span>{Math.round(normalized.attention)}%</span></div>
-                <Progress value={normalized.attention} className="h-1.5" />
+                <Progress value={normalized.attention} className="h-1.5" indicatorClassName="bg-secondary" />
                 <div className="flex items-center justify-between text-xs"><span>Dementia</span><span>{Math.round(dementiaPct.attention)}%</span></div>
-                <Progress value={dementiaPct.attention} className="h-1.5" />
+                <Progress value={dementiaPct.attention} className="h-1.5" indicatorClassName="bg-destructive/70" />
               </div>
             </div>
             <div className="rounded-lg border p-3">
               <p className="text-sm font-medium text-muted-foreground">Language</p>
               <div className="space-y-2 mt-1">
                 <div className="flex items-center justify-between text-xs"><span>Normal</span><span>100%</span></div>
-                <Progress value={100} className="h-1.5" />
+                <Progress value={100} className="h-1.5" indicatorClassName="bg-primary" />
                 <div className="flex items-center justify-between text-xs"><span>Patient</span><span>{Math.round(normalized.language)}%</span></div>
-                <Progress value={normalized.language} className="h-1.5" />
+                <Progress value={normalized.language} className="h-1.5" indicatorClassName="bg-secondary" />
                 <div className="flex items-center justify-between text-xs"><span>Dementia</span><span>{Math.round(dementiaPct.language)}%</span></div>
-                <Progress value={dementiaPct.language} className="h-1.5" />
+                <Progress value={dementiaPct.language} className="h-1.5" indicatorClassName="bg-destructive/70" />
               </div>
             </div>
             <div className="rounded-lg border p-3">
               <p className="text-sm font-medium text-muted-foreground">Executive</p>
               <div className="space-y-2 mt-1">
                 <div className="flex items-center justify-between text-xs"><span>Normal</span><span>100%</span></div>
-                <Progress value={100} className="h-1.5" />
+                <Progress value={100} className="h-1.5" indicatorClassName="bg-primary" />
                 <div className="flex items-center justify-between text-xs"><span>Patient</span><span>{Math.round(normalized.executive)}%</span></div>
-                <Progress value={normalized.executive} className="h-1.5" />
+                <Progress value={normalized.executive} className="h-1.5" indicatorClassName="bg-secondary" />
                 <div className="flex items-center justify-between text-xs"><span>Dementia</span><span>{Math.round(dementiaPct.executive)}%</span></div>
-                <Progress value={dementiaPct.executive} className="h-1.5" />
+                <Progress value={dementiaPct.executive} className="h-1.5" indicatorClassName="bg-destructive/70" />
               </div>
             </div>
           </div>

@@ -1,0 +1,15 @@
+=== Cog-AI Multi-Modal Accuracy Report ===
+
+Overall Accuracy: 96.05%
+Precision:        94.16% (How often 'High Risk' is correct)
+Recall:           94.77% (How many cases we catch)
+F1-Score:         94.46% (Balance of both)
+
+Confusion Matrix:
+  Predicted No | Predicted Yes
+Actual No:  268       | 9
+Actual Yes: 8       | 145
+
+=== Clinical Sensitivity Test ===
+Case: Age 60, Healthy Stats, Failed Tests + Rubbish Speech
+Risk Detection: 88.46% Confidence

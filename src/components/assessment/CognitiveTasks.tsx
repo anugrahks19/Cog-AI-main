@@ -8,7 +8,7 @@ import { InteractionLog, CognitiveScores } from "@/services/api";
 
 export interface CognitiveTask {
   id: string;
-  type: "word-recall" | "digit-span" | "tapping" | "clock-drawing" | "attention";
+  type: "word-recall" | "digit-span" | "language" | "clock-drawing" | "attention";
   title: string;
   description: string;
   prompt: string;
@@ -163,8 +163,6 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
         },
       };
     });
-
-    completeTask(task.id, { correct: isCorrect, selectedOption: optionIndex });
   };
 
   const handleFinish = async () => {
@@ -174,9 +172,9 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
         const metadata =
           task.sequenceAnswer && task.options
             ? {
-                expectedSequence: task.sequenceAnswer,
-                selectedSequence: state.sequence ?? [],
-              }
+              expectedSequence: task.sequenceAnswer,
+              selectedSequence: state.sequence ?? [],
+            }
             : task.type === "clock-drawing"
               ? { description: state.freeResponse ?? "" }
               : undefined;
@@ -195,13 +193,27 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
       const scores = tasks.reduce<CognitiveScores>(
         (acc, task) => {
           const state = taskStates[task.id] ?? createTaskState();
-          const baseScore = state.correct ? 1 : 0;
+
+          let isCorrect = state.correct ?? false;
+
+          // Score sequences (e.g., word recall, digit span)
+          if (task.sequenceAnswer && state.sequence) {
+            isCorrect = task.sequenceAnswer.length === state.sequence.length &&
+              task.sequenceAnswer.every((val, index) => val === state.sequence![index]);
+          }
+          // Score free text (e.g., clock drawing pseudo-check)
+          else if (task.type === "clock-drawing") {
+            // Basic proxy for testing: if they wrote *anything* meaningful (> 3 characters)
+            isCorrect = (state.freeResponse?.trim()?.length ?? 0) > 3;
+          }
+
+          const baseScore = isCorrect ? 1 : 0;
           const penalty = (state.errors ?? 0) * 0.1;
           const adjustedScore = Math.max(0, baseScore - penalty);
 
           if (task.type === "word-recall") acc.memoryScore += adjustedScore;
           if (task.type === "digit-span" || task.type === "attention") acc.attentionScore += adjustedScore;
-          if (task.type === "tapping") acc.languageScore += adjustedScore;
+          if (task.type === "language") acc.languageScore += adjustedScore;
           if (task.type === "clock-drawing") acc.executiveScore += adjustedScore;
 
           return acc;
@@ -351,9 +363,7 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting }: CognitiveTas
                 completeTask(currentTask.id, { correct: true, errors: 0 });
                 return;
               }
-
-              const markCorrect = currentTask.type === "clock-drawing" ? { correct: true } : undefined;
-              completeTask(currentTask.id, markCorrect);
+              completeTask(currentTask.id);
             }}
           >
             Complete

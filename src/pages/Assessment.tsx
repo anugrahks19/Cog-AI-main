@@ -30,122 +30,119 @@ import { Loader2, ShieldCheck, BrainCircuit, AudioWaveform, ClipboardList } from
 import { saveAssessmentResult, loadAssessmentHistory, saveEncryptedAssessmentResult, loadEncryptedAssessmentHistory } from "@/lib/history";
 import { fingerprint } from "@/lib/crypto";
 import { signInWithGoogle, signInWithEmail, signUpWithEmail, logoutFirebase, saveReport, loadReports } from "@/lib/firebase";
+import { getLocalizedStrings } from "@/lib/i18n";
 
 // Temporary: enable local heuristic inference while backend model is unavailable
 const USE_LOCAL_HEURISTIC = true;
 const ENABLE_BACKEND_APIS = import.meta.env.VITE_ENABLE_BACKEND === "true";
 
-const SPEECH_TASKS: SpeechTask[] = [
-  {
-    id: "picture-description",
-    title: "Picture Description",
-    description: "Describe the scene shown in the picture prompt in as much detail as possible.",
-    prompt:
-      "Imagine you are looking at a photo of a family cooking together in a kitchen. Describe everything you see.",
-    maxDurationMs: 120_000,
-    visualUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
-  },
-  {
-    id: "story-immediate-recall",
-    title: "Story Recall (Immediate)",
-    description: "Listen to a narrated story and repeat everything you remember immediately.",
-    prompt:
-      "After hearing the story, retell it in your own words. Mention the key events, people, places, and any details that stood out.",
-    storyScript:
-      "Ravi woke up early on Sunday and decided to visit the weekly farmer's market. He bought fresh tomatoes, leafy spinach, and sweet mangoes for his mother. On the way out, he bumped into his old friend Sunil, who invited him for tea later that evening.",
-    maxDurationMs: 120_000,
-    hideScriptDuringRecall: true,
-  },
-  {
-    id: "category-fluency",
-    title: "Verbal Fluency (Category)",
-    description: "Name as many items in the requested category as you can within one minute.",
-    prompt: "Say as many animal names as you can in one minute. Avoid repeating the same animal twice.",
-    fluencyType: "category",
-    fluencyTarget: "Animals",
-    maxDurationMs: 60_000,
-  },
-  {
-    id: "letter-fluency",
-    title: "Verbal Fluency (Letter)",
-    description: "Say as many words as you can that start with the given letter.",
-    prompt: "Say as many words as you can that begin with the letter 'K'. Avoid using names or repeating words.",
-    fluencyType: "letter",
-    fluencyTarget: "K",
-    maxDurationMs: 60_000,
-  },
-  {
-    id: "procedural-description",
-    title: "Explain a Routine",
-    description: "Walk through a familiar procedure step-by-step to capture sequencing and executive function.",
-    prompt:
-      "Explain how you would prepare your favorite breakfast, including all the steps, tools, and timing you rely on.",
-    maxDurationMs: 90_000,
-  },
-  {
-    id: "guided-imagery",
-    title: "Guided Imagery",
-    description: "Imagine a calming place and describe it with rich sensory detail.",
-    prompt:
-      "Close your eyes and picture your ideal peaceful location. Describe what you see, hear, smell, and feel as if you are truly there.",
-    maxDurationMs: 90_000,
-  },
-  {
-    id: "future-planning",
-    title: "Future Planning",
-    description: "Outline an upcoming day or event to evaluate sequencing and organization.",
-    prompt:
-      "Walk me through your plans for tomorrow from morning to night. Mention the people involved, places you'll go, and anything you need to remember.",
-    maxDurationMs: 90_000,
-  },
-  {
-    id: "free-conversation",
-    title: "Open Conversation",
-    description: "Speak freely about how technology has changed communication in your lifetime.",
-    prompt: "Share your thoughts about how technology has changed communication in your lifetime.",
-    maxDurationMs: 90_000,
-  },
-  {
-    id: "story-delayed-recall",
-    title: "Story Recall (Delayed)",
-    description: "After completing the other speech tasks, recall the same story again without hearing it.",
-    prompt:
-      "Describe the story you heard earlier, including who was involved, what happened, and any locations or objects mentioned.",
-    maxDurationMs: 120_000,
-    hideScriptDuringRecall: true,
-    unlockAfterTaskId: "story-immediate-recall",
-    unlockDelayMs: 3 * 60 * 1000,
-  },
-  {
-    id: "self-reflection",
-    title: "Self Reflection",
-    description: "Reflect on how the assessment felt and note any moments you found challenging.",
-    prompt:
-      "Share a brief reflection on which tasks felt easiest or hardest today and why you think that was the case.",
-    maxDurationMs: 90_000,
-  },
-];
+function getSpeechTasks(language: string): SpeechTask[] {
+  const i18n = getLocalizedStrings(language);
+  return [
+    {
+      id: "picture-description",
+      title: i18n["picture-description-title"],
+      description: i18n["picture-description-desc"],
+      prompt: i18n["picture-description-prompt"],
+      maxDurationMs: 120_000,
+      visualUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+    },
+    {
+      id: "story-immediate-recall",
+      title: i18n["story-immediate-recall-title"],
+      description: i18n["story-immediate-recall-desc"],
+      prompt: i18n["story-immediate-recall-prompt"],
+      storyScript:
+        "Ravi woke up early on Sunday and decided to visit the weekly farmer's market. He bought fresh tomatoes, leafy spinach, and sweet mangoes for his mother. On the way out, he bumped into his old friend Sunil, who invited him for tea later that evening.",
+      maxDurationMs: 120_000,
+      hideScriptDuringRecall: true,
+    },
+    {
+      id: "category-fluency",
+      title: i18n["category-fluency-title"],
+      description: i18n["category-fluency-desc"],
+      prompt: i18n["category-fluency-prompt"],
+      fluencyType: "category",
+      fluencyTarget: "Animals",
+      maxDurationMs: 60_000,
+    },
+    {
+      id: "letter-fluency",
+      title: i18n["letter-fluency-title"],
+      description: i18n["letter-fluency-desc"],
+      prompt: i18n["letter-fluency-prompt"],
+      fluencyType: "letter",
+      fluencyTarget: "K",
+      maxDurationMs: 60_000,
+    },
+    {
+      id: "procedural-description",
+      title: i18n["procedural-description-title"],
+      description: i18n["procedural-description-desc"],
+      prompt: i18n["procedural-description-prompt"],
+      maxDurationMs: 90_000,
+    },
+    {
+      id: "guided-imagery",
+      title: i18n["guided-imagery-title"],
+      description: i18n["guided-imagery-desc"],
+      prompt: i18n["guided-imagery-prompt"],
+      maxDurationMs: 90_000,
+    },
+    {
+      id: "future-planning",
+      title: i18n["future-planning-title"],
+      description: i18n["future-planning-desc"],
+      prompt: i18n["future-planning-prompt"],
+      maxDurationMs: 90_000,
+    },
+    {
+      id: "free-conversation",
+      title: i18n["free-conversation-title"],
+      description: i18n["free-conversation-desc"],
+      prompt: i18n["free-conversation-prompt"],
+      maxDurationMs: 90_000,
+    },
+    {
+      id: "story-delayed-recall",
+      title: i18n["story-delayed-recall-title"],
+      description: i18n["story-delayed-recall-desc"],
+      prompt: i18n["story-delayed-recall-prompt"],
+      maxDurationMs: 120_000,
+      hideScriptDuringRecall: true,
+      unlockAfterTaskId: "story-immediate-recall",
+      unlockDelayMs: 3 * 60 * 1000,
+    },
+    {
+      id: "self-reflection",
+      title: i18n["self-reflection-title"],
+      description: i18n["self-reflection-desc"],
+      prompt: i18n["self-reflection-prompt"],
+      maxDurationMs: 90_000,
+    },
+  ];
+}
 
 // Helpers to build randomized, non-repeating tasks per session
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
-function makeWordRecallTask(id: string, title: string, words: string[]): CognitiveTask {
+function makeWordRecallTask(id: string, title: string, desc: string, promptPrefix: string, words: string[]): CognitiveTask {
   const options = shuffle(words);
   const sequenceAnswer = words.map((w) => options.indexOf(w));
   return {
     id,
     type: "word-recall",
     title,
-    description: "Remember the list of words and tap them in the same order after Begin.",
-    prompt: `Remember the words: ${words.join(", ")}.`,
+    description: desc,
+    prompt: `${promptPrefix} ${words.join(", ")}.`,
     options,
     sequenceAnswer,
   };
 }
 
-function makeDigitSpanTask(id: string, title: string, digits: number[]): CognitiveTask {
+function makeDigitSpanTask(id: string, title: string, desc: string, digits: number[]): CognitiveTask {
   const pool = shuffle(Array.from(new Set([...digits, ...shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 5)])));
   const options = pool.map(String);
   const sequenceAnswer = digits.map((d) => options.indexOf(String(d)));
@@ -153,7 +150,7 @@ function makeDigitSpanTask(id: string, title: string, digits: number[]): Cogniti
     id,
     type: "digit-span",
     title,
-    description: "Tap the digits in the exact order after Begin.",
+    description: desc,
     prompt: digits.join(", "),
     options,
     sequenceAnswer,
@@ -178,41 +175,58 @@ function generateCognitiveTasks(language: string): CognitiveTask[] {
   const poolA = shuffle(lex).slice(0, 5);
   const poolB = shuffle(lex.filter((w) => !poolA.includes(w))).slice(0, 5);
 
-  const word1 = makeWordRecallTask("word-recall", "Word Recall", poolA);
-  const word2 = makeWordRecallTask("word-recall-2", "Word Recall II", poolB);
+  const i18n = getLocalizedStrings(language);
 
-  const digit1 = makeDigitSpanTask("digit-span", "Digit Span", [3, 9, 1, 4, 7]);
-  const digit2 = makeDigitSpanTask("digit-span-reverse", "Digit Span (Reverse)", [7, 2, 9, 3]);
+  const word1 = makeWordRecallTask("word-recall", i18n["word-recall-title"], i18n["word-recall-desc"], i18n["word-recall-prompt"], poolA);
+  const word2 = makeWordRecallTask("word-recall-2", i18n["word-recall-2-title"], i18n["word-recall-desc"], i18n["word-recall-prompt"], poolB);
+
+  const digit1 = makeDigitSpanTask("digit-span", i18n["digit-span-title"], i18n["digit-span-desc"], [3, 9, 1, 4, 7]);
+  const digit2 = makeDigitSpanTask("digit-span-reverse", i18n["digit-span-reverse-title"], i18n["digit-span-desc"], [7, 2, 9, 3]);
 
   const attention1: CognitiveTask = {
     id: "attention-sequence",
     type: "attention",
-    title: "Attention Pattern",
-    description: "Continue the color sequence.",
-    prompt: "Red → Blue → Red → Blue → ?",
-    options: ["Red", "Blue", "Green"],
+    title: i18n["attention-sequence-title"],
+    description: i18n["attention-sequence-desc"],
+    prompt: i18n["attention-sequence-prompt"],
+    options: [i18n["attention-sequence-opt1"], i18n["attention-sequence-opt2"], i18n["attention-sequence-opt3"]],
     correctAnswer: 0,
   };
 
   const visualSearch: CognitiveTask = {
     id: "attention-visual",
     type: "attention",
-    title: "Visual Search",
-    description: "Find the odd-one-out.",
-    prompt: "Square, Square, Circle, Square → Which is different?",
-    options: ["Circle", "Square", "Triangle"],
+    title: i18n["visual-search-title"],
+    description: i18n["visual-search-desc"],
+    prompt: i18n["visual-search-prompt"],
+    options: [i18n["visual-search-opt1"], i18n["visual-search-opt2"], i18n["visual-search-opt3"]],
     correctAnswer: 0,
+  };
+
+  const languageVocab: CognitiveTask = {
+    id: "language-vocab",
+    type: "language",
+    title: i18n["language-vocab-title"] || "Verbal Comprehension",
+    description: i18n["language-vocab-desc"] || "Select the word most associated with the main word.",
+    prompt: i18n["language-vocab-prompt"] || "Water",
+    options: [
+      i18n["language-vocab-opt1"] || "Fire",
+      i18n["language-vocab-opt2"] || "Ocean",
+      i18n["language-vocab-opt3"] || "Sand",
+      i18n["language-vocab-opt4"] || "Moon"
+    ],
+    correctAnswer: 1, // Ocean
   };
 
   const clock: CognitiveTask = {
     id: "clock-drawing",
     type: "clock-drawing",
-    title: "Clock Drawing",
-    description: "Imagine drawing a clock showing the time 10 past 11.",
-    prompt: "Picture a clock and describe how you would place the numbers and hands for 11:10.",
+    title: i18n["clock-drawing-title"],
+    description: i18n["clock-drawing-desc"],
+    prompt: i18n["clock-drawing-prompt"],
   };
 
-  return [word1, digit1, attention1, word2, digit2, visualSearch, clock];
+  return [word1, digit1, attention1, word2, digit2, visualSearch, languageVocab, clock];
 }
 
 const LANGUAGE_LABEL: Record<string, string> = {
@@ -257,6 +271,7 @@ const Assessment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeechUploading, setIsSpeechUploading] = useState(false);
   const [result, setResult] = useState<AssessmentResult | null>(null);
+  const speechTasks = useMemo(() => getSpeechTasks(user?.language || "en"), [user?.language]);
   const cognitiveTasks = useMemo(() => generateCognitiveTasks(user?.language || "en"), [user?.language]);
   const [isResultPending, setIsResultPending] = useState(false);
   const [isAnalysisComplete, setIsAnalysisComplete] = useState(false);
@@ -273,9 +288,9 @@ const Assessment = () => {
   const analysisStartTimeRef = useRef<number | null>(null);
 
   const activeStep = STEP_CONFIG[activeStepIndex];
-  const isCloudSignedIn = auth?.provider === "firebase";
+  const isAuthenticated = !!auth;
   const isOfflineMode = !ENABLE_BACKEND_APIS;
-  const onboardingUnlocked = isOfflineMode || isCloudSignedIn;
+  const onboardingUnlocked = isOfflineMode || isAuthenticated;
 
   const resolveLanguageLabel = useCallback(
     (tag?: string | null) => {
@@ -446,10 +461,10 @@ const Assessment = () => {
     if (isOfflineMode) {
       return false;
     }
-    if (!isCloudSignedIn) {
+    if (!isAuthenticated) {
       toast({
         title: "Sign in required",
-        description: "Please continue with Google first to unlock the assessment workflow.",
+        description: "Please log in to your account first to unlock the assessment workflow.",
       });
       return true;
     }
@@ -690,8 +705,8 @@ const Assessment = () => {
         const exec = Math.min(1, scores.executiveScore / domainMax.executiveScore);
         const cognitiveAvg = (mem + att + lang + exec) / 4;
 
-        const expected = SPEECH_TASKS.map((t) => t.maxDurationMs ?? 60_000);
-        const recorded = SPEECH_TASKS.map((t) => Math.min(speechDurations[t.id] ?? 0, t.maxDurationMs ?? 60_000));
+        const expected = speechTasks.map((t) => t.maxDurationMs ?? 60_000);
+        const recorded = speechTasks.map((t) => Math.min(speechDurations[t.id] ?? 0, t.maxDurationMs ?? 60_000));
         const coverage = recorded.length
           ? recorded.reduce((a, b, i) => a + (expected[i] ? b / expected[i] : 0), 0) / recorded.length
           : 0.5; // neutral if no speech
@@ -898,13 +913,13 @@ const Assessment = () => {
           </CardContent>
         </Card>
 
-        {!isCloudSignedIn && (
+        {!isAuthenticated && (
           <Card className="border-yellow-500/60 bg-yellow-500/5">
             <CardContent className="py-6">
               <div className="space-y-2 text-sm">
-                <p className="font-semibold text-yellow-700">Sign in with Google to continue</p>
+                <p className="font-semibold text-yellow-700">Sign in to continue</p>
                 <p className="text-muted-foreground">
-                  For security, the assessment workflow only unlocks after you connect your Google account using the button above. Once signed in, onboarding and recording steps will become available.
+                  For security, the assessment workflow only unlocks after you log in using the options above. Once signed in, onboarding and recording steps will become available.
                 </p>
               </div>
             </CardContent>
@@ -942,17 +957,17 @@ const Assessment = () => {
 
         <Separator />
 
-        {activeStep.id === "consent" && isCloudSignedIn && (
+        {activeStep.id === "consent" && isAuthenticated && (
           <div className="max-w-3xl mx-auto">
             <OnboardingForm user={user} onSubmit={handleOnboardingSubmit} isSubmitting={isLoading} />
           </div>
         )}
 
-        {activeStep.id === "speech" && isCloudSignedIn && user && assessmentId && (
+        {activeStep.id === "speech" && isAuthenticated && user && assessmentId && (
           <div className="space-y-6">
             <SpeechRecorder
               language={user.language}
-              tasks={SPEECH_TASKS}
+              tasks={speechTasks}
               feedback={speechFeedback}
               isUploading={isSpeechUploading}
               onUpload={handleSpeechUpload}

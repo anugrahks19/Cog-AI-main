@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserProfile } from "@/context/UserSessionContext";
+import { useNavigate } from "react-router-dom";
 
 const onboardingSchema = z
   .object({
@@ -88,6 +89,8 @@ export const OnboardingForm = ({
   onSubmit,
   isSubmitting,
 }: OnboardingFormProps) => {
+  const navigate = useNavigate();
+
   const defaultValues = useMemo(
     () => ({
       name: user?.name ?? "",
@@ -231,7 +234,7 @@ export const OnboardingForm = ({
                 <FormItem>
                   <FormLabel>Height (cm)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="e.g. 175" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                    <Input type="number" min={50} max={300} placeholder="e.g. 175" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                   </FormControl>
                 </FormItem>
               )}
@@ -243,7 +246,7 @@ export const OnboardingForm = ({
                 <FormItem>
                   <FormLabel>Weight (kg)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="e.g. 70" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                    <Input type="number" min={20} max={500} placeholder="e.g. 70" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                   </FormControl>
                 </FormItem>
               )}
@@ -423,9 +426,21 @@ export const OnboardingForm = ({
           )}
         />
 
-        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Registering..." : "Agree & Continue"}
-        </Button>
+        <div className="flex flex-col gap-3">
+          <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Registering..." : "Agree & Continue"}
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="w-full"
+            onClick={() => navigate("/past-assessments")}
+          >
+            Past Assessments
+          </Button>
+        </div>
       </form>
     </Form>
   );

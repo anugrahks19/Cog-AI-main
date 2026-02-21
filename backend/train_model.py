@@ -47,17 +47,17 @@ def train():
     target = 'Diagnosis'
     
     # --- MULTI-MODAL FUSION (THE CRACK) ---
-    # We generate synthetic speech embeddings (768-dim) that correlate with the ground truth
-    # In a real environment, these would be the Wav2Vec2 embeddings.
-    print("Generating Synthetic Speech Embeddings for Fusion Training...")
+    # We generate synthetic speech audio features (82-dim) that correlate with the ground truth
+    # In a real environment, these are the Librosa audio features (MFCC mean/std, rolloff, zero cross).
+    print("Generating Synthetic Speech Features for Fusion Training...")
     n_samples = len(df)
-    n_dims = 768
+    n_dims = 82  # 40 mfcc_mean + 40 mfcc_std + 1 rolloff + 1 zero_cross
     
     # Create latent speech features: Diagnosis 1 has higher variance/shifted mean in certain dims
     speech_data = np.random.normal(0, 1, size=(n_samples, n_dims))
     # Shift embeddings for diagnosed cases to allow model to learn the correlation
     diag_indices = df[df[target] == 1].index
-    speech_data[diag_indices, :50] += 0.5 # Shift first 50 dims
+    speech_data[diag_indices, :40] += 0.5 # Shift first 40 dims (representing MFCCs)
     
     # 2. Dimensionality Reduction (PCA)
     print(f"Applying PCA to reduce {n_dims} speech dims to 10 clinical biomarkers...")

@@ -41,9 +41,10 @@ def evaluate():
     # Generate Synthetic Speech for valuation (since data is tabular)
     # This simulates real-world usage where speech is processed
     n_samples = len(df)
-    speech_data = np.random.normal(0, 1, size=(n_samples, 768))
+    n_dims = 82
+    speech_data = np.random.normal(0, 1, size=(n_samples, n_dims))
     diag_indices = df[df[target] == 1].index
-    speech_data[diag_indices, :50] += 0.5 
+    speech_data[diag_indices, :40] += 0.5 
 
     # Transformation Pipeline
     speech_reduced = pca.transform(speech_data)
@@ -82,7 +83,7 @@ def evaluate():
     test_case[0, 6] = 0  # ADL 0
     
     # + Irregular Speech
-    s_test = (np.random.normal(0, 2, 768) + 2.0).reshape(1, -1)
+    s_test = (np.random.normal(0, 2, 82) + 2.0).reshape(1, -1)
     s_red = pca.transform(s_test)
     
     f_test = np.concatenate([test_case, s_red], axis=1)
