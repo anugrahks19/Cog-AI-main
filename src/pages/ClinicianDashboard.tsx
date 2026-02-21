@@ -9,6 +9,8 @@ import PatientTrendChart from "@/components/dashboard/PatientTrendChart";
 import { downloadFHIR } from "@/lib/fhir";
 import { AssessmentResult } from "@/services/api";
 import ClinicianLogin from "@/pages/ClinicianLogin";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const MOCK_PATIENTS = [
     { id: "P-101", name: "Ramesh Gupta", age: 68, risk: "High", lastVisit: "2026-12-18", trend: "Declining" },
@@ -75,6 +77,57 @@ export default function ClinicianDashboard() {
     const handleExportFHIR = () => {
         if (!selectedPatient) return;
         downloadFHIR(latestResult, `${selectedPatient}-medical-record.json`);
+    };
+
+    const handleDownloadPDF = async () => {
+        if (!selectedPatient || !patientDetails) return;
+
+        const element = document.getElementById("patient-detail-view");
+        if (!element) return;
+
+        try {
+            // Apply temporary styles for better PDF rendering
+            const originalStyle = element.style.cssText;
+            element.style.width = '1200px';
+            element.style.height = 'auto';
+            element.style.padding = '30px';
+            element.style.backgroundColor = 'white';
+
+            // Hide action buttons during export
+            const actionButtons = document.getElementById("pdf-action-buttons");
+            if (actionButtons) actionButtons.style.display = "none";
+
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                windowWidth: 1200
+            });
+
+            // Restore original styles
+            element.style.cssText = originalStyle;
+            if (actionButtons) actionButtons.style.display = "flex";
+
+            const imgData = canvas.toDataURL("image/png");
+
+            // A4 Landscape dimensions in mm (297 x 210)
+            const pdf = new jsPDF({
+                orientation: "landscape",
+                unit: "mm",
+                format: "a4"
+            });
+
+            // Calculate dimensions to fit the page while maintaining aspect ratio
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${patientDetails.name.replace(/\s+/g, '_')}_Scan_Report.pdf`);
+        } catch (error) {
+            console.error("Failed to generate PDF:", error);
+            const actionButtons = document.getElementById("pdf-action-buttons");
+            if (actionButtons) actionButtons.style.display = "flex";
+        }
     };
 
     return (
@@ -173,26 +226,26 @@ export default function ClinicianDashboard() {
                         {/* Patient Detail View */}
                         <Card className="md:col-span-2 h-[700px] flex flex-col border-border/60 shadow-lg overflow-hidden">
                             {selectedPatient && patientDetails ? (
-                                <>
+                                <div id="patient-detail-view" className="flex flex-col h-full bg-white dark:bg-card">
                                     <div className="bg-muted/30 p-6 border-b border-border/50 flex flex-wrap justify-between items-start gap-4">
                                         <div>
-                                            <h2 className="text-3xl font-bold text-foreground mb-1">{patientDetails.name}</h2>
-                                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                                <span className="flex items-center gap-1.5 bg-white dark:bg-card px-2 py-1 rounded-md border shadow-sm">
-                                                    <Users className="h-3 w-3" /> {patientDetails.age} Years / Male
+                                            <h2 className="text-3xl font-bold text-foreground mb-3">{patientDetails.name}</h2>
+                                            <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-2">
+                                                <span className="flex items-center bg-white dark:bg-card px-2 py-1 rounded-md border shadow-sm">
+                                                    <Users className="h-3 w-3 mr-1.5" /> {patientDetails.age} Years / Male
                                                 </span>
-                                                <span className="flex items-center gap-1.5 bg-white dark:bg-card px-2 py-1 rounded-md border shadow-sm">
+                                                <span className="flex items-center bg-white dark:bg-card px-2 py-1 rounded-md border shadow-sm">
                                                     Last Visit: {patientDetails.lastVisit}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div id="pdf-action-buttons" className="flex gap-2">
                                             <Button variant="outline" onClick={handleExportFHIR} className="bg-white dark:bg-card hover:bg-muted shadow-sm border-primary/20 hover:border-primary/50 text-primary">
                                                 <FileJson className="mr-2 h-4 w-4" />
                                                 Export FHIR JSON
                                             </Button>
-                                            <Button className="bg-primary hover:bg-primary/90 shadow-md">
-                                                Review Scan
+                                            <Button onClick={handleDownloadPDF} className="bg-primary hover:bg-primary/90 shadow-md">
+                                                Download PDF
                                             </Button>
                                         </div>
                                     </div>
@@ -215,17 +268,17 @@ export default function ClinicianDashboard() {
                                         )}
 
                                         {/* The Chart */}
-                                        <div className="bg-white dark:bg-card rounded-xl border border-border/50 p-4 shadow-sm">
-                                            <div className="flex items-center justify-between mb-6">
-                                                <h3 className="font-semibold flex items-center gap-2">
-                                                    <TrendingUp className="h-5 w-5 text-primary" />
+                                        <div className="bg-white dark:bg-card rounded-xl border border-border/50 p-4 shadow-sm w-full block">
+                                            <div className="flex items-center justify-between mb-6 w-full">
+                                                <h3 className="font-semibold flex items-center">
+                                                    <TrendingUp className="h-5 w-5 text-primary mr-2" />
                                                     Longitudinal Cognitive Track (6 Months)
                                                 </h3>
-                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 ml-auto shrink-0 whitespace-nowrap">
                                                     AI Analysis: {patientDetails.trend}
                                                 </Badge>
                                             </div>
-                                            <div className="h-[300px] w-full">
+                                            <div className="h-[300px] w-full block overflow-visible mt-2">
                                                 <PatientTrendChart key={selectedPatient} history={MOCK_HISTORY} />
                                             </div>
                                         </div>
@@ -262,7 +315,7 @@ export default function ClinicianDashboard() {
                                             </div>
                                         </div>
                                     </CardContent>
-                                </>
+                                </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground bg-muted/10">
                                     <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
