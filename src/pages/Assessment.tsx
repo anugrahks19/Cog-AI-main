@@ -29,7 +29,7 @@ import { Loader2, ShieldCheck, BrainCircuit, AudioWaveform, ClipboardList } from
 // Removed printing from Results page header
 import { saveAssessmentResult, loadAssessmentHistory, saveEncryptedAssessmentResult, loadEncryptedAssessmentHistory } from "@/lib/history";
 import { fingerprint } from "@/lib/crypto";
-import { signInWithGoogle, signInWithEmail, signUpWithEmail, logoutFirebase, saveReport, loadReports } from "@/lib/firebase";
+import { signInWithGoogle, signInWithEmail, signUpWithEmail, logoutFirebase, saveReport, loadReports, saveGlobalReport } from "@/lib/firebase";
 import { getLocalizedStrings } from "@/lib/i18n";
 
 // Temporary: enable local heuristic inference while backend model is unavailable
@@ -754,7 +754,10 @@ const Assessment = () => {
             saveAssessmentResult(user.id, heuristic);
             setHistory(loadAssessmentHistory(user.id));
           }
-        } catch { }
+          await saveGlobalReport(heuristic, { name: user.name, age: user.age, language: user.language });
+        } catch (e) {
+          console.error("Error saving assessment result:", e);
+        }
         finalizeAnalysis();
         return;
       }
@@ -763,7 +766,9 @@ const Assessment = () => {
       if (ENABLE_BACKEND_APIS && user.accessToken) {
         try {
           await requestRiskPrediction(assessmentId, user.accessToken);
-        } catch { }
+        } catch (e) {
+          console.error("Error requesting risk prediction:", e);
+        }
       }
 
       const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -794,7 +799,10 @@ const Assessment = () => {
             saveAssessmentResult(user.id, fetched);
             setHistory(loadAssessmentHistory(user.id));
           }
-        } catch { }
+          await saveGlobalReport(fetched, { name: user.name, age: user.age, language: user.language });
+        } catch (e) {
+          console.error("Error saving fetched result:", e);
+        }
         finalizeAnalysis();
       } else {
         toast({ title: "Prediction pending", description: "Result is taking longer than usual. Please wait a few seconds and retry." });
@@ -1023,7 +1031,7 @@ const Assessment = () => {
             {!isResultPending && isAnalysisComplete && result && (
               <>
                 <div ref={reportRef} className="space-y-6">
-                  <RiskResultCard result={result} languageLabel={languageLabel} />
+                  <RiskResultCard result={result} languageLabel={languageLabel} history={history} patientName={user?.name} />
                   <AnalyticsCharts result={result} history={history} />
                 </div>
               </>

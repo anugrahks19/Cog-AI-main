@@ -1,16 +1,19 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, TrendingUp, AlertCircle, FileJson, Users, LogOut, LayoutDashboard } from "lucide-react";
+import { Search, TrendingUp, AlertCircle, FileJson, Users, LogOut, LayoutDashboard, Trash2 } from "lucide-react";
 import PatientTrendChart from "@/components/dashboard/PatientTrendChart";
 import { downloadFHIR } from "@/lib/fhir";
 import { AssessmentResult } from "@/services/api";
 import ClinicianLogin from "@/pages/ClinicianLogin";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { loadGlobalReports, deleteGlobalReport } from "@/lib/firebase";
+import { RiskResultCard } from "@/components/assessment/RiskResultCard";
+import { useToast } from "@/hooks/use-toast";
 
 const MOCK_PATIENTS = [
     { id: "P-101", name: "Ramesh Gupta", age: 68, risk: "High", lastVisit: "2026-12-18", trend: "Declining" },
@@ -62,17 +65,83 @@ export default function ClinicianDashboard() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [globalReports, setGlobalReports] = useState<AssessmentResult[]>([]);
+    const { toast } = useToast();
+    const [hiddenMocks, setHiddenMocks] = useState<string[]>([]); // To allow "deleting" mocks from view
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            loadGlobalReports().then(setGlobalReports).catch(console.error);
+        }
+    }, [isAuthenticated]);
 
     if (!isAuthenticated) {
         return <ClinicianLogin onLogin={() => setIsAuthenticated(true)} />;
     }
 
-    const filteredPatients = MOCK_PATIENTS.filter((p) =>
+    const uniquePatientsMap = new Map();
+    globalReports.forEach(r => {
+        const anyR = r as any;
+        const name = anyR.patientSummary?.name || `Patient (${r.assessmentId.substring(0, 5)})`;
+        const age = anyR.patientSummary?.age || "N/A";
+
+        if (!uniquePatientsMap.has(name)) {
+            uniquePatientsMap.set(name, {
+                id: r.assessmentId,
+                name,
+                age,
+                risk: r.riskLevel,
+                lastVisit: new Date(r.generatedAt).toISOString().split('T')[0],
+                trend: "New Data",
+                history: [r]
+            });
+        } else {
+            uniquePatientsMap.get(name).history.push(r);
+            uniquePatientsMap.get(name).history.sort((a: any, b: any) => new Date(a.generatedAt).getTime() - new Date(b.generatedAt).getTime());
+
+            const currentLastVisit = new Date(uniquePatientsMap.get(name).lastVisit).getTime();
+            const thisVisit = new Date(r.generatedAt).getTime();
+            if (thisVisit > currentLastVisit) {
+                uniquePatientsMap.get(name).lastVisit = new Date(thisVisit).toISOString().split('T')[0];
+                uniquePatientsMap.get(name).risk = r.riskLevel;
+            }
+        }
+    });
+
+    const realPatients = Array.from(uniquePatientsMap.values());
+    const mockPatientsWithHistory = MOCK_PATIENTS.map(p => ({ ...p, history: MOCK_HISTORY }));
+    const allPatients = [...realPatients, ...mockPatientsWithHistory].filter(p => !hiddenMocks.includes(p.id));
+
+    const filteredPatients = allPatients.filter((p) =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const patientDetails = MOCK_PATIENTS.find((p) => p.id === selectedPatient);
-    const latestResult = MOCK_HISTORY[MOCK_HISTORY.length - 1];
+    const patientDetails = allPatients.find((p) => p.id === selectedPatient);
+    // Use the latest result in their history for FHIR export
+    const latestResult = patientDetails ? patientDetails.history[patientDetails.history.length - 1] : MOCK_HISTORY[MOCK_HISTORY.length - 1];
+
+    const handleDelete = async (patientId: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // prevent row click from selecting the patient
+        if (window.confirm("Are you sure you want to delete this assessment record?")) {
+            if (patientId.startsWith("P-")) {
+                // It's a mock patient, simulate deletion
+                setHiddenMocks(prev => [...prev, patientId]);
+                toast({ title: "Deleted", description: "Mock record removed from view." });
+            } else {
+                // It's a real global report ID
+                const success = await deleteGlobalReport(patientId);
+                if (success) {
+                    setGlobalReports(prev => prev.filter(r => r.assessmentId !== patientId));
+                    toast({ title: "Deleted", description: "Assessment record permanently deleted." });
+                } else {
+                    toast({ title: "Error", description: "Network error occurred." });
+                }
+            }
+            if (selectedPatient === patientId) {
+                setSelectedPatient(null);
+            }
+        }
+    };
 
     const handleExportFHIR = () => {
         if (!selectedPatient) return;
@@ -208,12 +277,23 @@ export default function ClinicianDashboard() {
                                                             <div className="font-semibold text-foreground">{patient.name}</div>
                                                             <div className="text-xs text-muted-foreground mt-0.5">ID: {patient.id} • {patient.age} yrs</div>
                                                         </div>
-                                                        <Badge
-                                                            variant={patient.risk === "High" ? "destructive" : patient.risk === "Medium" ? "secondary" : "outline"}
-                                                            className="shadow-sm"
-                                                        >
-                                                            {patient.risk} Risk
-                                                        </Badge>
+                                                        <div className="flex flex-col items-end gap-2">
+                                                            <Badge
+                                                                variant={patient.risk === "High" ? "destructive" : patient.risk === "Medium" ? "secondary" : "outline"}
+                                                                className="shadow-sm"
+                                                            >
+                                                                {patient.risk} Risk
+                                                            </Badge>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                                                onClick={(e) => handleDelete(patient.id, e)}
+                                                                title="Delete this record"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -250,70 +330,12 @@ export default function ClinicianDashboard() {
                                         </div>
                                     </div>
 
-                                    <CardContent className="space-y-6 overflow-auto p-6 bg-gradient-to-b from-white to-muted/20 flex-1">
-                                        {/* Alert for High Risk */}
-                                        {patientDetails.risk === "High" && (
-                                            <div className="bg-red-50/80 border border-red-200 rounded-xl p-4 flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-top-2">
-                                                <div className="p-2 bg-red-100 rounded-full">
-                                                    <AlertCircle className="h-6 w-6 text-red-600" />
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-bold text-red-900 text-lg">Urgent Intervention Recommended</h4>
-                                                    <p className="text-red-700 mt-1">
-                                                        Patient's cognitive scores have dropped significantly (Probability: 72%).
-                                                        Recent speech analysis indicates <span className="font-semibold">lexical retrieval deficits</span>.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* The Chart */}
-                                        <div className="bg-white dark:bg-card rounded-xl border border-border/50 p-4 shadow-sm w-full block">
-                                            <div className="flex items-center justify-between mb-6 w-full">
-                                                <h3 className="font-semibold flex items-center">
-                                                    <TrendingUp className="h-5 w-5 text-primary mr-2" />
-                                                    Longitudinal Cognitive Track (6 Months)
-                                                </h3>
-                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 ml-auto shrink-0 whitespace-nowrap">
-                                                    AI Analysis: {patientDetails.trend}
-                                                </Badge>
-                                            </div>
-                                            <div className="h-[300px] w-full block overflow-visible mt-2">
-                                                <PatientTrendChart key={selectedPatient} history={MOCK_HISTORY} />
-                                            </div>
-                                        </div>
-
-                                        {/* Metrics Grid */}
-                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                            <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
-                                                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Memory</div>
-                                                <div className="text-3xl font-bold text-primary">4<span className="text-lg text-muted-foreground/50">/10</span></div>
-                                                <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-red-500 w-[40%]"></div>
-                                                </div>
-                                            </div>
-                                            <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
-                                                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Attention</div>
-                                                <div className="text-3xl font-bold text-yellow-600">5<span className="text-lg text-muted-foreground/50">/10</span></div>
-                                                <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-yellow-500 w-[50%]"></div>
-                                                </div>
-                                            </div>
-                                            <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
-                                                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Language</div>
-                                                <div className="text-3xl font-bold text-green-600">6<span className="text-lg text-muted-foreground/50">/10</span></div>
-                                                <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-green-500 w-[60%]"></div>
-                                                </div>
-                                            </div>
-                                            <div className="p-4 bg-white dark:bg-card border border-border/50 rounded-xl shadow-sm text-center hover:shadow-md transition-shadow">
-                                                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Executive</div>
-                                                <div className="text-3xl font-bold text-blue-600">5<span className="text-lg text-muted-foreground/50">/10</span></div>
-                                                <div className="h-1.5 w-full bg-muted mt-3 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-blue-500 w-[50%]"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <CardContent className="space-y-6 overflow-auto p-0 bg-transparent flex-1 pt-6">
+                                        <RiskResultCard
+                                            result={patientDetails.history[patientDetails.history.length - 1]}
+                                            history={patientDetails.history}
+                                            patientName={patientDetails.name}
+                                        />
                                     </CardContent>
                                 </div>
                             ) : (

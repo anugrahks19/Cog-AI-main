@@ -29,7 +29,7 @@ const Index = () => {
               AI-powered early dementia detection and monitoring app. Helping families and doctors detect cognitive issues early through simple tests and easy-to-understand reports.
             </p>
 
-            <div className="max-w-2xl mx-auto mb-8 p-4 bg-destructive/10 border border-destructive/20 rounded-xl animate-fade-in text-destructive text-sm sm:text-base font-medium">
+            <div className="max-w-2xl mx-auto mb-8 p-4 bg-primary/10 border border-primary/30 rounded-xl animate-fade-in text-primary dark:text-blue-400 text-sm sm:text-base font-semibold shadow-sm">
               Note: Cog.ai is a research prototype. Not a medical device.
             </div>
 

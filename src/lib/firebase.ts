@@ -18,6 +18,7 @@ import {
   orderBy,
   query,
   Timestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { AssessmentResult } from "@/services/api";
 
@@ -60,7 +61,57 @@ export async function logoutFirebase() {
 
 export type FireUser = User;
 
-export { collection, doc, setDoc, getDocs, orderBy, query, Timestamp };
+export { collection, doc, setDoc, getDocs, orderBy, query, Timestamp, deleteDoc };
+
+// Global Assessments (for MD Portal / QR Code)
+export async function saveGlobalReport(result: AssessmentResult, patientSummary?: any) {
+  try {
+    const col = collection(db, "global_assessments");
+    const d = doc(col, result.assessmentId);
+    await setDoc(d, {
+      ...result,
+      patientSummary: patientSummary || null,
+      createdAt: Timestamp.now()
+    }, { merge: true });
+  } catch (error) {
+    console.error("Error saving global report:", error);
+  }
+}
+
+export async function loadGlobalReports(): Promise<AssessmentResult[]> {
+  try {
+    const col = collection(db, "global_assessments");
+    const q = query(col, orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => {
+      const data = doc.data() as any;
+      return {
+        assessmentId: data.assessmentId ?? doc.id,
+        riskLevel: data.riskLevel,
+        probability: data.probability,
+        featureImportances: data.featureImportances ?? [],
+        subScores: data.subScores,
+        recommendations: data.recommendations ?? [],
+        generatedAt: data.generatedAt ?? new Date().toISOString(),
+        patientSummary: data.patientSummary,
+      } as AssessmentResult & { patientSummary?: any };
+    });
+  } catch (error) {
+    console.error("Error loading global reports:", error);
+    return [];
+  }
+}
+
+export async function deleteGlobalReport(assessmentId: string) {
+  try {
+    const d = doc(db, "global_assessments", assessmentId);
+    await deleteDoc(d);
+    return true;
+  } catch (error) {
+    console.error("Error deleting global report:", error);
+    return false;
+  }
+}
 
 // Firestore paths: users/{uid}/reports/{assessmentId}
 export async function saveReport(uid: string, result: AssessmentResult) {

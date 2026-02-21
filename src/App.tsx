@@ -21,6 +21,7 @@ import ClinicianDashboard from "./pages/ClinicianDashboard";
 import BrainGym from "./pages/BrainGym";
 import Pricing from "./pages/Pricing";
 import PastAssessments from "./pages/PastAssessments";
+import VerifyReport from "./pages/VerifyReport";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const AppContent = () => {
             <Route path="/hospital-finder" element={<HospitalFinder />} />
             <Route path="/clinician" element={<ClinicianDashboard />} />
             <Route path="/brain-gym" element={<BrainGym />} />
+            <Route path="/verify/:id" element={<VerifyReport />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
