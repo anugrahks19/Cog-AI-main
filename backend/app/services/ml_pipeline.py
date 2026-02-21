@@ -79,19 +79,27 @@ class SpeechEmbeddingExtractor:
 
 class RiskPredictor:
     def __init__(self) -> None:
-        # Model trained on: Age, Gender, EducationLevel, BMI, Smoking, AlcoholConsumption, 
-        # PhysicalActivity, DietQuality, SleepQuality, FamilyHistoryAlzheimers, 
-        # CardiovascularDisease, Diabetes, Depression, HeadInjury, Hypertension, 
-        # SystolicBP, DiastolicBP, CholesterolTotal, CholesterolLDL, CholesterolHDL, 
-        # CholesterolTriglycerides, MMSE, FunctionalAssessment, MemoryComplaints, 
-        # BehavioralProblems, ADL, Confusion, Disorientation, PersonalityChanges, 
-        # DifficultyCompletingTasks, Forgetfulness
         self.model: Optional[Any] = None
-        model_path = os.getenv("MODEL_PATH", "model.pkl")
+        self.pca: Optional[Any] = None
+        self.scaler: Optional[Any] = None
+        
+        # Path resolution (handle relative to app module)
+        base_path = Path(__file__).parent.parent
+        model_path = base_path / "model.pkl"
+        pca_path = base_path / "pca_transform.pkl"
+        scaler_path = base_path / "scaler.pkl"
+
         try:
-            if Path(model_path).exists():
+            if model_path.exists():
                 self.model = joblib.load(model_path)
-        except Exception:
+            if pca_path.exists():
+                self.pca = joblib.load(pca_path)
+            if scaler_path.exists():
+                self.scaler = joblib.load(scaler_path)
+            
+            print(f"[RiskPredictor] Loaded Fused ML Ensemble & Transformers")
+        except Exception as e:
+            print(f"[RiskPredictor] Error loading models: {e}")
             self.model = None
 
     def _fallback(self, features: Dict[str, Any]) -> Dict[str, Any]:
@@ -141,28 +149,25 @@ class RiskPredictor:
         }
 
     def predict(self, features: Dict[str, Any]) -> Dict[str, Any]:
-        if self.model is None:
+        if self.model is None or self.pca is None or self.scaler is None:
             return self._fallback(features)
 
         tab = features.get("tabular", {})
+        speech_raw = features.get("speech_embedding", [0.0] * 768)
         
-        # Construct feature vector matching the Interaction Features model order:
-        # ['Age', 'Gender', 'EducationLevel', 'MMSE', 'FunctionalAssessment', 
-        #  'MemoryComplaints', 'ADL', 'FamilyHistoryAlzheimers', 'HeadInjury', 
-        #  'Depression', 'CardiovascularScore', 'LifestyleDeficit']
-        
-        # Calculate Compound Scores
+        # 1. Construct Tabular part (15 features)
         diabetes = tab.get("Diabetes", 0)
         hypert = tab.get("Hypertension", 0)
         smoking = tab.get("Smoking", 0)
-        cardio_score = diabetes + hypert + smoking # 0-3
+        cardio_score = diabetes + hypert + smoking
         
         sleep = tab.get("SleepQuality", 7)
         activity = tab.get("PhysicalActivity", 5)
-        lifestyle_deficit = (1 if sleep < 6 else 0) + (1 if activity < 4 else 0) # 0-2
+        lifestyle_deficit = (1 if sleep < 6 else 0) + (1 if activity < 4 else 0)
 
         try:
-            x = np.array([
+            # Match training feature order
+            tabular_vec = [
                 tab.get("Age", 60),
                 tab.get("Gender", 0),
                 tab.get("EducationLevel", 0),
@@ -173,56 +178,64 @@ class RiskPredictor:
                 tab.get("FamilyHistoryAlzheimers", 0),
                 tab.get("HeadInjury", 0),
                 tab.get("Depression", 0),
-                # New Compound Features
                 cardio_score,
                 lifestyle_deficit,
-                # Phase 3 Features
                 tab.get("BMI", 25.0),
                 tab.get("AlcoholConsumption", 0.0),
                 tab.get("DietQuality", 5.0)
-            ]).reshape(1, -1)
+            ]
 
-            # DEBUG: Prove it to the user
-            print(f"\n[AI MODEL] Detecting Risk (Advanced Interactions)...")
-            print(f"  > Inputs: Age={x[0,0]}, MMSE={x[0,3]}, Functional={x[0,4]}")
-            print(f"  > Computed Risk: CardioScore={cardio_score}/3, LifestyleDeficit={lifestyle_deficit}/2")
+            # 2. Multi-Modal Fusion (The "Crack")
+            # PCA dimensionality reduction for speech embeddings
+            speech_vec = np.array(speech_raw).reshape(1, -1)
+            speech_reduced = self.pca.transform(speech_vec).flatten()
+            
+            # 3. Concatenate Fused Vector (Tabular + Reduced Speech)
+            fused_vec = np.concatenate([tabular_vec, speech_reduced]).reshape(1, -1)
+            
+            # 4. Standardize
+            fused_scaled = self.scaler.transform(fused_vec)
 
-            # Predict
+            # 5. Predict
             if hasattr(self.model, "predict_proba"):
-                proba = float(self.model.predict_proba(x)[0, 1])
+                proba = float(self.model.predict_proba(fused_scaled)[0, 1])
             else:
-                proba = float(self.model.predict(x)[0])
+                proba = float(self.model.predict(fused_scaled)[0])
                 proba = max(0.0, min(1.0, proba))
             
             # --- LONGITUDINAL BOOST ---
-            # If the user has shown significant decline (>3 MMSE points), we override the static prediction.
-            # A drop is clinically significant even if the absolute score is still "normal".
             score_decline = tab.get("ScoreDecline", 0)
             if score_decline == 1:
-                print(f"  > ⚠️ SIGNIFICANT DECLINE DETECTED. Boosting Risk.")
                 proba = min(0.99, proba + 0.3) 
 
             risk_level = "Low" if proba < 0.33 else ("Medium" if proba < 0.66 else "High")
 
-            # Feature Importances (if available)
+            # Feature Importances (Dynamic Mapping)
             fi = []
-            if hasattr(self.model, "feature_importances_"):
+            if hasattr(self.model, "feature_importances_") or hasattr(self.model, "estimators_"):
+                # Composite names
                 names = [
                     'Age', 'Gender', 'Education', 'MMSE', 'Functional', 'MemoryComplaints', 'ADL',
-                    'FamilyHist', 'Diabetes', 'Hypertension', 'HeadInj', 'Depression',
-                    'Sleep', 'Activity', 'Smoking'
-                ]
-                importances = getattr(self.model, "feature_importances_")
-                # Top 5 factors
-                indices = np.argsort(importances)[::-1][:5]
-                total = float(np.sum(np.abs(importances))) or 1.0
+                    'FamilyHist', 'HeadInjury', 'Depression', 'CardioScore', 'LifestyleDeficit',
+                    'BMI', 'Alcohol', 'DietQuality'
+                ] + [f'SpeechBio_{i}' for i in range(10)]
                 
-                for i in indices:
-                    fi.append({
-                        "feature": names[i],
-                        "contribution": float(importances[i]) / total,
-                        "direction": "negative" # Simplification; tree models are complex
-                    })
+                # For VotingClassifier, we take weighted importance
+                try:
+                    if hasattr(self.model, "estimators_"):
+                        importances = np.mean([est.feature_importances_ for est in self.model.estimators_], axis=0)
+                    else:
+                        importances = self.model.feature_importances_
+                        
+                    indices = np.argsort(importances)[::-1][:5]
+                    total = float(np.sum(np.abs(importances))) or 1.0
+                    for i in indices:
+                        fi.append({
+                            "feature": names[i],
+                            "contribution": float(importances[i]) / total,
+                            "direction": "negative" if i in [3, 4, 6] else "positive" # Cognitive/ADL are negative drivers
+                        })
+                except: pass
 
             return {
                 "risk_level": risk_level,
@@ -230,8 +243,8 @@ class RiskPredictor:
                 "feature_importances": fi or self._fallback(features)["feature_importances"],
                 "recommendations": [
                     "Consult a neurologist for a detailed assessment" if proba > 0.5 else "Maintain a healthy lifestyle",
-                    "Monitor sleep patterns" if tab.get("SleepQuality", 7) < 5 else None,
-                    "Increase physical activity" if tab.get("PhysicalActivity", 5) < 3 else None,
+                    "Monitor speech and memory patterns" if proba > 0.3 else None,
+                    "Incoherent speech detection triggered" if np.abs(speech_reduced).mean() > 2.0 else None,
                 ],
             }
         except Exception as e:
