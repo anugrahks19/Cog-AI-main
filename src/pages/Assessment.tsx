@@ -475,7 +475,8 @@ const Assessment = () => {
 
   const createOfflineSession = useCallback(
     (values: OnboardingFormValues, reason?: string) => {
-      const offlineAssessmentId = `offline-${Date.now()}`;
+      // Use standard ID format so it's globally scannable via QR
+      const offlineAssessmentId = `A-${Date.now()}`;
       const offlineUser: UserProfile = {
         id: offlineAssessmentId,
         name: values.name,
