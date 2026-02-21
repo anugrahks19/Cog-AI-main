@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { InteractionLog, CognitiveScores } from "@/services/api";
+import { playAudioGuide } from "@/lib/audioGuide";
 
 export interface CognitiveTask {
   id: string;
@@ -58,6 +59,13 @@ export const CognitiveTasks = ({ tasks, onComplete, isSubmitting, language }: Co
   const [isFinished, setIsFinished] = useState(false);
   const currentTask = useMemo(() => tasks[currentIndex], [tasks, currentIndex]);
   const i18n = getLocalizedStrings(language);
+
+  // Auto-play the Audio Guide when task changes
+  useEffect(() => {
+    if (currentTask && !isFinished) {
+      playAudioGuide(`${currentTask.title}... ${currentTask.description}`, language);
+    }
+  }, [currentTask, isFinished, language]);
 
   const startTaskTimer = (taskId: string) => {
     setTaskStates((prev) => {

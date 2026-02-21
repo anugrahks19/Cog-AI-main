@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
 import type { SpeechUploadResponse } from "@/services/api";
+import { playAudioGuide } from "@/lib/audioGuide";
 
 export interface SpeechTask {
   id: string;
@@ -175,7 +176,10 @@ export const SpeechRecorder = ({
     autoStopTriggeredRef.current = false;
     storyStartedRef.current[currentTask.id] = storyStartedRef.current[currentTask.id] ?? false;
     setIsNarrating(false);
-  }, [currentTask]);
+
+    // Auto-play the Audio Guide when task changes
+    playAudioGuide(`${currentTask.title}... ${currentTask.description}`, language);
+  }, [currentTask, language]);
 
   useEffect(() => {
     return () => {

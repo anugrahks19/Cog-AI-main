@@ -25,9 +25,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, ShieldCheck, BrainCircuit, AudioWaveform, ClipboardList } from "lucide-react";
+import { Loader2, ShieldCheck, BrainCircuit, AudioWaveform, ClipboardList, Volume2, VolumeX } from "lucide-react";
 // Removed printing from Results page header
 import { saveAssessmentResult, loadAssessmentHistory, saveEncryptedAssessmentResult, loadEncryptedAssessmentHistory } from "@/lib/history";
+import { setAudioGuideEnabled, playAudioGuide, stopAudioGuide } from "@/lib/audioGuide";
 import { fingerprint } from "@/lib/crypto";
 import { signInWithGoogle, signInWithEmail, signUpWithEmail, logoutFirebase, saveReport, loadReports, saveGlobalReport } from "@/lib/firebase";
 import { getLocalizedStrings } from "@/lib/i18n";
@@ -282,6 +283,7 @@ const Assessment = () => {
   const [speechFeedback, setSpeechFeedback] = useState<Record<string, SpeechUploadResponse>>({});
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
+
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const progressIntervalRef = useRef<number | null>(null);
   const progressTimeoutRef = useRef<number | null>(null);
@@ -290,6 +292,18 @@ const Assessment = () => {
 
   const i18n = useMemo(() => getLocalizedStrings(uiLanguage), [uiLanguage]);
   const steps = useMemo(() => getStepConfig(i18n), [i18n]);
+
+  const [audioGuideEnabled, setAudioGuideEnabledState] = useState(false);
+
+  // Sync state with global audio guide module
+  useEffect(() => {
+    setAudioGuideEnabled(audioGuideEnabled);
+    if (!audioGuideEnabled) {
+      stopAudioGuide();
+    } else {
+      playAudioGuide(i18n["ui-audio-guide-enabled"] || "Audio guide activated. Instructions will be read aloud.", uiLanguage);
+    }
+  }, [audioGuideEnabled, uiLanguage, i18n]);
 
   const activeStep = steps[activeStepIndex];
   const isAuthenticated = !!auth;
@@ -852,6 +866,20 @@ const Assessment = () => {
               ))}
             </div>
           </CardContent>
+          <div className="border-t border-primary/10 px-6 py-4 flex items-center justify-between">
+            <span className="text-sm font-medium flex items-center gap-2">
+              {audioGuideEnabled ? <Volume2 className="h-4 w-4 text-primary" /> : <VolumeX className="h-4 w-4 text-muted-foreground" />}
+              {i18n["ui-audio-guide"] || "Audio Guide (for Visually Impaired)"}
+            </span>
+            <Button
+              variant={audioGuideEnabled ? "default" : "outline"}
+              size="sm"
+              onClick={() => setAudioGuideEnabledState(!audioGuideEnabled)}
+              className="rounded-full"
+            >
+              {audioGuideEnabled ? "Enabled" : "Disabled"}
+            </Button>
+          </div>
         </Card>
 
         {/* Account options */}
