@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Play, Shield, Users, Brain, CheckCircle } from "lucide-react";
-import heroImage from "../assets/Background 1.png";
+import heroImage from "../assets/Background 2.png";
 import dementiaBackground from "../assets/dementia-background.png";
 
 const Index = () => {
@@ -13,7 +13,7 @@ const Index = () => {
       >
         <div className="absolute inset-0 bg-gradient-hero opacity-10"></div>
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-30"
+          className="absolute inset-0 bg-cover bg-center opacity-60"
           style={{ backgroundImage: `url(${heroImage})` }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/55 to-background/75 pointer-events-none"></div>
@@ -29,8 +29,9 @@ const Index = () => {
               AI-powered early dementia detection and monitoring app. Helping families and doctors detect cognitive issues early through simple tests and easy-to-understand reports.
             </p>
 
-            <div className="max-w-2xl mx-auto mb-8 p-4 bg-primary/10 border border-primary/30 rounded-xl animate-fade-in text-primary dark:text-blue-400 text-sm sm:text-base font-semibold shadow-sm">
-              Note: Cog.ai is a research prototype. Not a medical device.
+            <div className="max-w-2xl mx-auto mb-8 p-4 bg-blue-500/10 dark:bg-[#121629]/90 border border-blue-400 dark:border-yellow-500/80 rounded-xl animate-fade-in text-sm sm:text-base text-center shadow-sm backdrop-blur-md">
+              <span className="font-semibold text-blue-600 dark:text-yellow-500">Note: </span>
+              <span className="font-medium text-blue-600 dark:text-slate-300">Cog.ai is a research prototype. Not a medical device.</span>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">

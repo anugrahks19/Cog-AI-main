@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Mail, Twitter, Linkedin, Github } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import logoImage from "@/assets/logo final.png";
 
 const Footer = () => {
   return (
@@ -9,11 +10,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Description */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="h-10 w-10 flex items-center justify-center rounded-lg overflow-hidden bg-card">
-                <img src="/logo.png" alt="Cog.ai logo" className="h-8 w-8 object-contain" />
-              </div>
-              <span className="text-xl font-bold text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span>
+            <div className="flex items-center space-x-2 mb-6">
+              <img src={logoImage} alt="Cog.ai logo" className="h-8 w-auto object-contain" />
+              <span className="text-2xl font-bold text-gradient dark:bg-none dark:text-blue-500 tracking-tight">Cog.ai</span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
               AI-powered early dementia detection app. Helping families and doctors detect cognitive issues early through simple tests and easy-to-understand reports.

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sun, Moon } from "lucide-react";
+import logoImage from "@/assets/logo final.png";
 import { cn } from "@/lib/utils";
 
 const Navigation = () => {
@@ -60,12 +61,9 @@ const Navigation = () => {
     <nav className="fixed top-0 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-border/40 z-50 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="h-10 w-10 flex items-center justify-center rounded-lg overflow-hidden bg-card group-hover:scale-110 transition-transform duration-300">
-              <img src="/logo.png" alt="Cog.ai logo" className="h-8 w-8 object-contain" />
-            </div>
-            <span className="text-xl font-bold text-gradient dark:bg-none dark:text-blue-500">Cog.ai</span>
+            <img src={logoImage} alt="Cog.ai logo" className="h-8 w-auto object-contain group-hover:scale-105 transition-transform duration-300" />
+            <span className="text-2xl font-bold text-gradient dark:bg-none dark:text-blue-500 tracking-tight">Cog.ai</span>
           </Link>
 
           {/* Desktop Navigation */}
