@@ -416,8 +416,21 @@ export const SpeechRecorder = ({
             </blockquote>
           )}
           {isLocked && (
-            <div className="rounded-md border border-amber-500/50 bg-amber-100/40 p-3 text-amber-700 text-sm">
-              Delayed recall unlocks in <strong>{countdownText}</strong>
+            <div className="flex items-center justify-between rounded-md border border-amber-500/50 bg-amber-100/40 p-3 text-amber-700 text-sm">
+              <span>Delayed recall unlocks in <strong>{countdownText}</strong></span>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-7 px-3 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 border-0 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-500"
+                onClick={() => {
+                  setAvailableAtMap((prev) => ({
+                    ...prev,
+                    [currentTask.id]: Date.now(),
+                  }));
+                }}
+              >
+                Skip (Demo)
+              </Button>
             </div>
           )}
         </div>

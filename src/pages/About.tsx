@@ -52,7 +52,7 @@ const About = () => {
               <div className="bg-gradient-brain rounded-xl p-8 text-center">
                 <div className="text-4xl font-bold text-primary mb-2">55M+</div>
                 <p className="text-muted-foreground mb-4">People affected by dementia worldwide</p>
-                <div className="text-4xl font-bold text-secondary mb-2">6M+</div>
+                <div className="text-4xl font-bold text-white mb-2">6M+</div>
                 <p className="text-muted-foreground">Families seeking early detection</p>
               </div>
             </div>
